@@ -239,20 +239,20 @@ export default {
       },
       dataRule: {
         username: [
-          { required: true, message: '昵称不能为空', trigger: 'blur' }
+          {required: true, message: '昵称不能为空', trigger: 'blur'}
         ],
         password: [
-          { required: true, message: '密码不能为空', trigger: 'blur' }
+          {required: true, message: '密码不能为空', trigger: 'blur'}
         ],
-        rePass: [{ required: true, validator: checkRePass, trigger: 'blur' }],
-        email: [{ required: true, validator: checkEmail, trigger: 'blur' }],
-        mobile: [{ required: true, validator: checkPhone, trigger: 'blur' }],
-        point: [{ required: true, validator: checkPoint, trigger: 'blur' }],
-        gender: [{ required: true, message: '性别不能为空', trigger: 'blur' }],
+        rePass: [{required: true, validator: checkRePass, trigger: 'blur'}],
+        email: [{required: true, validator: checkEmail, trigger: 'blur'}],
+        mobile: [{required: true, validator: checkPhone, trigger: 'blur'}],
+        point: [{required: true, validator: checkPoint, trigger: 'blur'}],
+        gender: [{required: true, message: '性别不能为空', trigger: 'blur'}],
         vipLevel: [
-          { required: true, message: 'vip等级不能为空', trigger: 'blur' }
+          {required: true, message: 'vip等级不能为空', trigger: 'blur'}
         ],
-        status: [{ required: true, message: '状态不能为空', trigger: 'blur' }]
+        status: [{required: true, message: '状态不能为空', trigger: 'blur'}]
       },
       options: [
         {
@@ -304,7 +304,7 @@ export default {
             url: this.$http.adornUrl(`/api/user/info/${this.dataForm.id}`),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.username = data.user.username
               this.dataForm.password = data.user.password
@@ -340,7 +340,7 @@ export default {
             url: this.$http.adornUrl(
               `/api/user/${!this.dataForm.id ? 'save' : 'update'}`
             ),
-            method: `${!this.dataForm.brandId ? 'post' : 'put'}`,
+            method: `${!this.dataForm.id ? 'post' : 'put'}`,
             data: this.$http.adornData({
               id: this.dataForm.id || undefined,
               username: this.dataForm.username,
@@ -366,12 +366,12 @@ export default {
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')

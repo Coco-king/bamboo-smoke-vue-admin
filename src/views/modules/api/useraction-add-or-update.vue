@@ -112,7 +112,7 @@
           if (valid) {
             this.$http({
               url: this.$http.adornUrl(`/api/useraction/${!this.dataForm.id ? 'save' : 'update'}`),
-              method: `${!this.dataForm.brandId ? 'post' : 'put'}`,
+              method: `${!this.dataForm.id ? 'post' : 'put'}`,
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
                 'userId': this.dataForm.userId,
