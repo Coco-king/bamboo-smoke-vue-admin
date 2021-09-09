@@ -150,8 +150,9 @@
         prop="status"
         header-align="center"
         align="center"
-        label="状态（0：未激活邮箱，1：正常，-1：已封禁）"
+        label="状态"
       ></el-table-column>
+      <!-- （0：未激活邮箱，1：正常，-1：已封禁）-->
       <!-- <el-table-column
         prop="code"
         header-align="center"
