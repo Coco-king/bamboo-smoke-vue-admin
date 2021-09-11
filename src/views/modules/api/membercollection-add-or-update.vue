@@ -4,14 +4,14 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="用户ID" prop="userId">
-      <el-input v-model="dataForm.userId" placeholder="用户ID"></el-input>
+    <el-form-item label="用户ID" prop="memberId">
+      <el-input v-model="dataForm.memberId" placeholder="用户ID"></el-input>
     </el-form-item>
-    <el-form-item label="文章ID" prop="postId">
-      <el-input v-model="dataForm.postId" placeholder="文章ID"></el-input>
+    <el-form-item label="文章ID" prop="articleId">
+      <el-input v-model="dataForm.articleId" placeholder="文章ID"></el-input>
     </el-form-item>
-    <el-form-item label="文章所属的用户ID" prop="postUserId">
-      <el-input v-model="dataForm.postUserId" placeholder="文章所属的用户ID"></el-input>
+    <el-form-item label="文章所属的用户ID" prop="articleMemberId">
+      <el-input v-model="dataForm.articleMemberId" placeholder="文章所属的用户ID"></el-input>
     </el-form-item>
     <el-form-item label="消息状态" prop="status">
       <el-input v-model="dataForm.status" placeholder="消息状态"></el-input>
@@ -37,21 +37,21 @@
         visible: false,
         dataForm: {
           id: 0,
-          userId: '',
-          postId: '',
-          postUserId: '',
+          memberId: '',
+          articleId: '',
+          articleMemberId: '',
           status: '',
           createTime: '',
           updateTime: ''
         },
         dataRule: {
-          userId: [
+          memberId: [
             { required: true, message: '用户ID不能为空', trigger: 'blur' }
           ],
-          postId: [
+          articleId: [
             { required: true, message: '文章ID不能为空', trigger: 'blur' }
           ],
-          postUserId: [
+          articleMemberId: [
             { required: true, message: '文章所属的用户ID不能为空', trigger: 'blur' }
           ],
           status: [
@@ -74,17 +74,17 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.id) {
             this.$http({
-              url: this.$http.adornUrl(`/api/usercollection/info/${this.dataForm.id}`),
+              url: this.$http.adornUrl(`/api/membercollection/info/${this.dataForm.id}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
               if (data && data.code === 0) {
-                this.dataForm.userId = data.userCollection.userId
-                this.dataForm.postId = data.userCollection.postId
-                this.dataForm.postUserId = data.userCollection.postUserId
-                this.dataForm.status = data.userCollection.status
-                this.dataForm.createTime = data.userCollection.createTime
-                this.dataForm.updateTime = data.userCollection.updateTime
+                this.dataForm.memberId = data.memberCollection.memberId
+                this.dataForm.articleId = data.memberCollection.articleId
+                this.dataForm.articleMemberId = data.memberCollection.articleMemberId
+                this.dataForm.status = data.memberCollection.status
+                this.dataForm.createTime = data.memberCollection.createTime
+                this.dataForm.updateTime = data.memberCollection.updateTime
               }
             })
           }
@@ -95,13 +95,13 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/api/usercollection/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/api/membercollection/${!this.dataForm.id ? 'save' : 'update'}`),
               method: `${!this.dataForm.id ? 'post' : 'put'}`,
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
-                'userId': this.dataForm.userId,
-                'postId': this.dataForm.postId,
-                'postUserId': this.dataForm.postUserId,
+                'memberId': this.dataForm.memberId,
+                'articleId': this.dataForm.articleId,
+                'articleMemberId': this.dataForm.articleMemberId,
                 'status': this.dataForm.status,
                 'createTime': this.dataForm.createTime,
                 'updateTime': this.dataForm.updateTime
@@ -111,7 +111,7 @@
                 this.$message({
                   message: '操作成功',
                   type: 'success',
-                  duration: 1000,
+                  duration: 1500,
                   onClose: () => {
                     this.visible = false
                     this.$emit('refreshDataList')

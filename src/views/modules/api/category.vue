@@ -53,7 +53,7 @@
         label="图标">
       </el-table-column>
       <el-table-column
-        prop="postCount"
+        prop="articleCount"
         header-align="center"
         align="center"
         label="该分类的内容数量">
@@ -89,7 +89,7 @@
         label="分类状态">
       </el-table-column>
       <el-table-column
-        prop="isDeleted"
+        prop="deleted"
         header-align="center"
         align="center"
         label="逻辑删除（0：未删除，1：已删除）">

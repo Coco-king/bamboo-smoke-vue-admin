@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('api:usermessage:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('api:usermessage:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('api:article:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('api:article:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -29,58 +29,106 @@
         label="主键ID">
       </el-table-column>
       <el-table-column
-        prop="fromUserId"
+        prop="title"
         header-align="center"
         align="center"
-        label="发送消息的用户ID">
+        label="标题">
       </el-table-column>
       <el-table-column
-        prop="toUserId"
+        prop="coverImage"
         header-align="center"
         align="center"
-        label="接收消息的用户ID">
-      </el-table-column>
-      <el-table-column
-        prop="postId"
-        header-align="center"
-        align="center"
-        label="消息可能关联的帖子">
-      </el-table-column>
-      <el-table-column
-        prop="commentId"
-        header-align="center"
-        align="center"
-        label="消息可能关联的评论">
+        label="标题">
       </el-table-column>
       <el-table-column
         prop="content"
         header-align="center"
         align="center"
-        label="消息内容">
+        label="内容">
       </el-table-column>
       <el-table-column
-        prop="type"
+        prop="editMode"
         header-align="center"
         align="center"
-        label="消息类型（0：系统消息，1：回复文章，2：回复评论）">
+        label="编辑模式：html可视化，markdown ..">
+      </el-table-column>
+      <el-table-column
+        prop="categoryId"
+        header-align="center"
+        align="center"
+        label="文章所属分类ID">
+      </el-table-column>
+      <el-table-column
+        prop="memberId"
+        header-align="center"
+        align="center"
+        label="用户ID">
+      </el-table-column>
+      <el-table-column
+        prop="memberAuthName"
+        header-align="center"
+        align="center"
+        label="用户认证标识">
+      </el-table-column>
+      <el-table-column
+        prop="voteUp"
+        header-align="center"
+        align="center"
+        label="点赞人数">
+      </el-table-column>
+      <el-table-column
+        prop="voteDown"
+        header-align="center"
+        align="center"
+        label="点踩人数">
+      </el-table-column>
+      <el-table-column
+        prop="viewCount"
+        header-align="center"
+        align="center"
+        label="访问量">
+      </el-table-column>
+      <el-table-column
+        prop="commentCount"
+        header-align="center"
+        align="center"
+        label="评论数量">
+      </el-table-column>
+      <el-table-column
+        prop="recommend"
+        header-align="center"
+        align="center"
+        label="是否为精华">
+      </el-table-column>
+      <el-table-column
+        prop="level"
+        header-align="center"
+        align="center"
+        label="置顶等级">
       </el-table-column>
       <el-table-column
         prop="status"
         header-align="center"
         align="center"
-        label="消息状态（0：未读，1：已读）">
+        label="状态（0：审核未通过 1：审核通过）">
+      </el-table-column>
+      <el-table-column
+        prop="deleted"
+        header-align="center"
+        align="center"
+        label="逻辑删除（0：未删除，1：已删除）">
       </el-table-column>
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
-        label="创建时间">
+        label="创建日期">
       </el-table-column>
       <el-table-column
         prop="updateTime"
         header-align="center"
         align="center"
-        label="修改时间">
+        label="最后更新日期">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -109,7 +157,7 @@
 </template>
 
 <script>
-  import AddOrUpdate from './usermessage-add-or-update'
+  import AddOrUpdate from './article-add-or-update'
 
   export default {
     data () {
@@ -137,7 +185,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/api/usermessage/list'),
+          url: this.$http.adornUrl('/api/article/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -186,7 +234,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/api/usermessage/delete'),
+            url: this.$http.adornUrl('/api/article/delete'),
             method: 'delete',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {

@@ -19,11 +19,11 @@
     <el-form-item label="文章所属分类ID" prop="categoryId">
       <el-input v-model="dataForm.categoryId" placeholder="文章所属分类ID"></el-input>
     </el-form-item>
-    <el-form-item label="用户ID" prop="userId">
-      <el-input v-model="dataForm.userId" placeholder="用户ID"></el-input>
+    <el-form-item label="用户ID" prop="memberId">
+      <el-input v-model="dataForm.memberId" placeholder="用户ID"></el-input>
     </el-form-item>
-    <el-form-item label="用户认证标识" prop="userAuthName">
-      <el-input v-model="dataForm.userAuthName" placeholder="用户认证标识"></el-input>
+    <el-form-item label="用户认证标识" prop="memberAuthName">
+      <el-input v-model="dataForm.memberAuthName" placeholder="用户认证标识"></el-input>
     </el-form-item>
     <el-form-item label="点赞人数" prop="voteUp">
       <el-input v-model="dataForm.voteUp" placeholder="点赞人数"></el-input>
@@ -46,8 +46,8 @@
     <el-form-item label="状态（0：审核未通过 1：审核通过）" prop="status">
       <el-input v-model="dataForm.status" placeholder="状态（0：审核未通过 1：审核通过）"></el-input>
     </el-form-item>
-    <el-form-item label="逻辑删除（0：未删除，1：已删除）" prop="isDeleted">
-      <el-input v-model="dataForm.isDeleted" placeholder="逻辑删除（0：未删除，1：已删除）"></el-input>
+    <el-form-item label="逻辑删除（0：未删除，1：已删除）" prop="deleted">
+      <el-input v-model="dataForm.deleted" placeholder="逻辑删除（0：未删除，1：已删除）"></el-input>
     </el-form-item>
     <el-form-item label="创建日期" prop="createTime">
       <el-input v-model="dataForm.createTime" placeholder="创建日期"></el-input>
@@ -75,8 +75,8 @@
           content: '',
           editMode: '',
           categoryId: '',
-          userId: '',
-          userAuthName: '',
+          memberId: '',
+          memberAuthName: '',
           voteUp: '',
           voteDown: '',
           viewCount: '',
@@ -84,7 +84,7 @@
           recommend: '',
           level: '',
           status: '',
-          isDeleted: '',
+          deleted: '',
           createTime: '',
           updateTime: ''
         },
@@ -104,10 +104,10 @@
           categoryId: [
             { required: true, message: '文章所属分类ID不能为空', trigger: 'blur' }
           ],
-          userId: [
+          memberId: [
             { required: true, message: '用户ID不能为空', trigger: 'blur' }
           ],
-          userAuthName: [
+          memberAuthName: [
             { required: true, message: '用户认证标识不能为空', trigger: 'blur' }
           ],
           voteUp: [
@@ -131,7 +131,7 @@
           status: [
             { required: true, message: '状态（0：审核未通过 1：审核通过）不能为空', trigger: 'blur' }
           ],
-          isDeleted: [
+          deleted: [
             { required: true, message: '逻辑删除（0：未删除，1：已删除）不能为空', trigger: 'blur' }
           ],
           createTime: [
@@ -151,28 +151,28 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.id) {
             this.$http({
-              url: this.$http.adornUrl(`/api/post/info/${this.dataForm.id}`),
+              url: this.$http.adornUrl(`/api/article/info/${this.dataForm.id}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
               if (data && data.code === 0) {
-                this.dataForm.title = data.post.title
-                this.dataForm.coverImage = data.post.coverImage
-                this.dataForm.content = data.post.content
-                this.dataForm.editMode = data.post.editMode
-                this.dataForm.categoryId = data.post.categoryId
-                this.dataForm.userId = data.post.userId
-                this.dataForm.userAuthName = data.post.userAuthName
-                this.dataForm.voteUp = data.post.voteUp
-                this.dataForm.voteDown = data.post.voteDown
-                this.dataForm.viewCount = data.post.viewCount
-                this.dataForm.commentCount = data.post.commentCount
-                this.dataForm.recommend = data.post.recommend
-                this.dataForm.level = data.post.level
-                this.dataForm.status = data.post.status
-                this.dataForm.isDeleted = data.post.isDeleted
-                this.dataForm.createTime = data.post.createTime
-                this.dataForm.updateTime = data.post.updateTime
+                this.dataForm.title = data.article.title
+                this.dataForm.coverImage = data.article.coverImage
+                this.dataForm.content = data.article.content
+                this.dataForm.editMode = data.article.editMode
+                this.dataForm.categoryId = data.article.categoryId
+                this.dataForm.memberId = data.article.memberId
+                this.dataForm.memberAuthName = data.article.memberAuthName
+                this.dataForm.voteUp = data.article.voteUp
+                this.dataForm.voteDown = data.article.voteDown
+                this.dataForm.viewCount = data.article.viewCount
+                this.dataForm.commentCount = data.article.commentCount
+                this.dataForm.recommend = data.article.recommend
+                this.dataForm.level = data.article.level
+                this.dataForm.status = data.article.status
+                this.dataForm.deleted = data.article.deleted
+                this.dataForm.createTime = data.article.createTime
+                this.dataForm.updateTime = data.article.updateTime
               }
             })
           }
@@ -183,7 +183,7 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/api/post/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/api/article/${!this.dataForm.id ? 'save' : 'update'}`),
               method: `${!this.dataForm.id ? 'post' : 'put'}`,
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
@@ -192,8 +192,8 @@
                 'content': this.dataForm.content,
                 'editMode': this.dataForm.editMode,
                 'categoryId': this.dataForm.categoryId,
-                'userId': this.dataForm.userId,
-                'userAuthName': this.dataForm.userAuthName,
+                'memberId': this.dataForm.memberId,
+                'memberAuthName': this.dataForm.memberAuthName,
                 'voteUp': this.dataForm.voteUp,
                 'voteDown': this.dataForm.voteDown,
                 'viewCount': this.dataForm.viewCount,
@@ -201,7 +201,7 @@
                 'recommend': this.dataForm.recommend,
                 'level': this.dataForm.level,
                 'status': this.dataForm.status,
-                'isDeleted': this.dataForm.isDeleted,
+                'deleted': this.dataForm.deleted,
                 'createTime': this.dataForm.createTime,
                 'updateTime': this.dataForm.updateTime
               })
@@ -210,7 +210,7 @@
                 this.$message({
                   message: '操作成功',
                   type: 'success',
-                  duration: 1000,
+                  duration: 1500,
                   onClose: () => {
                     this.visible = false
                     this.$emit('refreshDataList')

@@ -41,19 +41,19 @@
         label="回复的评论ID">
       </el-table-column>
       <el-table-column
-        prop="postId"
+        prop="articleId"
         header-align="center"
         align="center"
         label="评论的内容ID">
       </el-table-column>
       <el-table-column
-        prop="userId"
+        prop="memberId"
         header-align="center"
         align="center"
         label="评论的用户ID">
       </el-table-column>
       <el-table-column
-        prop="userAuthName"
+        prop="memberAuthName"
         header-align="center"
         align="center"
         label="用户认证标识">

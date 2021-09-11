@@ -16,8 +16,8 @@
     <el-form-item label="图标" prop="icon">
       <el-input v-model="dataForm.icon" placeholder="图标"></el-input>
     </el-form-item>
-    <el-form-item label="该分类的内容数量" prop="postCount">
-      <el-input v-model="dataForm.postCount" placeholder="该分类的内容数量"></el-input>
+    <el-form-item label="该分类的内容数量" prop="articleCount">
+      <el-input v-model="dataForm.articleCount" placeholder="该分类的内容数量"></el-input>
     </el-form-item>
     <el-form-item label="排序编码" prop="order">
       <el-input v-model="dataForm.order" placeholder="排序编码"></el-input>
@@ -34,8 +34,8 @@
     <el-form-item label="分类状态" prop="status">
       <el-input v-model="dataForm.status" placeholder="分类状态"></el-input>
     </el-form-item>
-    <el-form-item label="逻辑删除（0：未删除，1：已删除）" prop="isDeleted">
-      <el-input v-model="dataForm.isDeleted" placeholder="逻辑删除（0：未删除，1：已删除）"></el-input>
+    <el-form-item label="逻辑删除（0：未删除，1：已删除）" prop="deleted">
+      <el-input v-model="dataForm.deleted" placeholder="逻辑删除（0：未删除，1：已删除）"></el-input>
     </el-form-item>
     <el-form-item label="创建日期" prop="createTime">
       <el-input v-model="dataForm.createTime" placeholder="创建日期"></el-input>
@@ -62,13 +62,13 @@
           content: '',
           summary: '',
           icon: '',
-          postCount: '',
+          articleCount: '',
           order: '',
           parentId: '',
           metaKeywords: '',
           metaDescription: '',
           status: '',
-          isDeleted: '',
+          deleted: '',
           createTime: '',
           updateTime: ''
         },
@@ -85,7 +85,7 @@
           icon: [
             { required: true, message: '图标不能为空', trigger: 'blur' }
           ],
-          postCount: [
+          articleCount: [
             { required: true, message: '该分类的内容数量不能为空', trigger: 'blur' }
           ],
           order: [
@@ -103,7 +103,7 @@
           status: [
             { required: true, message: '分类状态不能为空', trigger: 'blur' }
           ],
-          isDeleted: [
+          deleted: [
             { required: true, message: '逻辑删除（0：未删除，1：已删除）不能为空', trigger: 'blur' }
           ],
           createTime: [
@@ -132,13 +132,13 @@
                 this.dataForm.content = data.category.content
                 this.dataForm.summary = data.category.summary
                 this.dataForm.icon = data.category.icon
-                this.dataForm.postCount = data.category.postCount
+                this.dataForm.articleCount = data.category.articleCount
                 this.dataForm.order = data.category.order
                 this.dataForm.parentId = data.category.parentId
                 this.dataForm.metaKeywords = data.category.metaKeywords
                 this.dataForm.metaDescription = data.category.metaDescription
                 this.dataForm.status = data.category.status
-                this.dataForm.isDeleted = data.category.isDeleted
+                this.dataForm.deleted = data.category.deleted
                 this.dataForm.createTime = data.category.createTime
                 this.dataForm.updateTime = data.category.updateTime
               }
@@ -159,13 +159,13 @@
                 'content': this.dataForm.content,
                 'summary': this.dataForm.summary,
                 'icon': this.dataForm.icon,
-                'postCount': this.dataForm.postCount,
+                'articleCount': this.dataForm.articleCount,
                 'order': this.dataForm.order,
                 'parentId': this.dataForm.parentId,
                 'metaKeywords': this.dataForm.metaKeywords,
                 'metaDescription': this.dataForm.metaDescription,
                 'status': this.dataForm.status,
-                'isDeleted': this.dataForm.isDeleted,
+                'deleted': this.dataForm.deleted,
                 'createTime': this.dataForm.createTime,
                 'updateTime': this.dataForm.updateTime
               })
@@ -174,7 +174,7 @@
                 this.$message({
                   message: '操作成功',
                   type: 'success',
-                  duration: 1000,
+                  duration: 1500,
                   onClose: () => {
                     this.visible = false
                     this.$emit('refreshDataList')

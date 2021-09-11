@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('api:post:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('api:post:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('api:memberaction:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('api:memberaction:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -29,106 +29,52 @@
         label="主键ID">
       </el-table-column>
       <el-table-column
-        prop="title"
-        header-align="center"
-        align="center"
-        label="标题">
-      </el-table-column>
-      <el-table-column
-        prop="coverImage"
-        header-align="center"
-        align="center"
-        label="标题">
-      </el-table-column>
-      <el-table-column
-        prop="content"
-        header-align="center"
-        align="center"
-        label="内容">
-      </el-table-column>
-      <el-table-column
-        prop="editMode"
-        header-align="center"
-        align="center"
-        label="编辑模式：html可视化，markdown ..">
-      </el-table-column>
-      <el-table-column
-        prop="categoryId"
-        header-align="center"
-        align="center"
-        label="文章所属分类ID">
-      </el-table-column>
-      <el-table-column
-        prop="userId"
+        prop="memberId"
         header-align="center"
         align="center"
         label="用户ID">
       </el-table-column>
       <el-table-column
-        prop="userAuthName"
+        prop="action"
         header-align="center"
         align="center"
-        label="用户认证标识">
+        label="动作类型">
       </el-table-column>
       <el-table-column
-        prop="voteUp"
+        prop="point"
         header-align="center"
         align="center"
-        label="点赞人数">
+        label="得分">
       </el-table-column>
       <el-table-column
-        prop="voteDown"
+        prop="articleId"
         header-align="center"
         align="center"
-        label="点踩人数">
+        label="关联的帖子ID">
       </el-table-column>
       <el-table-column
-        prop="viewCount"
+        prop="commentId"
         header-align="center"
         align="center"
-        label="访问量">
-      </el-table-column>
-      <el-table-column
-        prop="commentCount"
-        header-align="center"
-        align="center"
-        label="评论数量">
-      </el-table-column>
-      <el-table-column
-        prop="recommend"
-        header-align="center"
-        align="center"
-        label="是否为精华">
-      </el-table-column>
-      <el-table-column
-        prop="level"
-        header-align="center"
-        align="center"
-        label="置顶等级">
+        label="关联的评论ID">
       </el-table-column>
       <el-table-column
         prop="status"
         header-align="center"
         align="center"
-        label="状态（0：审核未通过 1：审核通过）">
-      </el-table-column>
-      <el-table-column
-        prop="isDeleted"
-        header-align="center"
-        align="center"
-        label="逻辑删除（0：未删除，1：已删除）">
+        label="状态">
       </el-table-column>
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
-        label="创建日期">
+        label="创建时间">
       </el-table-column>
       <el-table-column
         prop="updateTime"
         header-align="center"
         align="center"
-        label="最后更新日期">
+        label="修改时间">
       </el-table-column>
       <el-table-column
         fixed="right"
@@ -157,7 +103,7 @@
 </template>
 
 <script>
-  import AddOrUpdate from './post-add-or-update'
+  import AddOrUpdate from './memberaction-add-or-update'
 
   export default {
     data () {
@@ -185,7 +131,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/api/post/list'),
+          url: this.$http.adornUrl('/api/memberaction/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -234,7 +180,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/api/post/delete'),
+            url: this.$http.adornUrl('/api/memberaction/delete'),
             method: 'delete',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {

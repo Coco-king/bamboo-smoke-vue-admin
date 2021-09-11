@@ -4,14 +4,14 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="发送消息的用户ID" prop="fromUserId">
-      <el-input v-model="dataForm.fromUserId" placeholder="发送消息的用户ID"></el-input>
+    <el-form-item label="发送消息的用户ID" prop="frobsMemberId">
+      <el-input v-model="dataForm.frobsMemberId" placeholder="发送消息的用户ID"></el-input>
     </el-form-item>
-    <el-form-item label="接收消息的用户ID" prop="toUserId">
-      <el-input v-model="dataForm.toUserId" placeholder="接收消息的用户ID"></el-input>
+    <el-form-item label="接收消息的用户ID" prop="toMemberId">
+      <el-input v-model="dataForm.toMemberId" placeholder="接收消息的用户ID"></el-input>
     </el-form-item>
-    <el-form-item label="消息可能关联的帖子" prop="postId">
-      <el-input v-model="dataForm.postId" placeholder="消息可能关联的帖子"></el-input>
+    <el-form-item label="消息可能关联的帖子" prop="articleId">
+      <el-input v-model="dataForm.articleId" placeholder="消息可能关联的帖子"></el-input>
     </el-form-item>
     <el-form-item label="消息可能关联的评论" prop="commentId">
       <el-input v-model="dataForm.commentId" placeholder="消息可能关联的评论"></el-input>
@@ -46,9 +46,9 @@
         visible: false,
         dataForm: {
           id: 0,
-          fromUserId: '',
-          toUserId: '',
-          postId: '',
+          frobsMemberId: '',
+          toMemberId: '',
+          articleId: '',
           commentId: '',
           content: '',
           type: '',
@@ -57,13 +57,13 @@
           updateTime: ''
         },
         dataRule: {
-          fromUserId: [
+          frobsMemberId: [
             { required: true, message: '发送消息的用户ID不能为空', trigger: 'blur' }
           ],
-          toUserId: [
+          toMemberId: [
             { required: true, message: '接收消息的用户ID不能为空', trigger: 'blur' }
           ],
-          postId: [
+          articleId: [
             { required: true, message: '消息可能关联的帖子不能为空', trigger: 'blur' }
           ],
           commentId: [
@@ -95,20 +95,20 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.id) {
             this.$http({
-              url: this.$http.adornUrl(`/api/usermessage/info/${this.dataForm.id}`),
+              url: this.$http.adornUrl(`/api/membermessage/info/${this.dataForm.id}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
               if (data && data.code === 0) {
-                this.dataForm.fromUserId = data.userMessage.fromUserId
-                this.dataForm.toUserId = data.userMessage.toUserId
-                this.dataForm.postId = data.userMessage.postId
-                this.dataForm.commentId = data.userMessage.commentId
-                this.dataForm.content = data.userMessage.content
-                this.dataForm.type = data.userMessage.type
-                this.dataForm.status = data.userMessage.status
-                this.dataForm.createTime = data.userMessage.createTime
-                this.dataForm.updateTime = data.userMessage.updateTime
+                this.dataForm.frobsMemberId = data.memberMessage.frobsMemberId
+                this.dataForm.toMemberId = data.memberMessage.toMemberId
+                this.dataForm.articleId = data.memberMessage.articleId
+                this.dataForm.commentId = data.memberMessage.commentId
+                this.dataForm.content = data.memberMessage.content
+                this.dataForm.type = data.memberMessage.type
+                this.dataForm.status = data.memberMessage.status
+                this.dataForm.createTime = data.memberMessage.createTime
+                this.dataForm.updateTime = data.memberMessage.updateTime
               }
             })
           }
@@ -119,13 +119,13 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/api/usermessage/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/api/membermessage/${!this.dataForm.id ? 'save' : 'update'}`),
               method: `${!this.dataForm.id ? 'post' : 'put'}`,
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
-                'fromUserId': this.dataForm.fromUserId,
-                'toUserId': this.dataForm.toUserId,
-                'postId': this.dataForm.postId,
+                'frobsMemberId': this.dataForm.frobsMemberId,
+                'toMemberId': this.dataForm.toMemberId,
+                'articleId': this.dataForm.articleId,
                 'commentId': this.dataForm.commentId,
                 'content': this.dataForm.content,
                 'type': this.dataForm.type,
@@ -138,7 +138,7 @@
                 this.$message({
                   message: '操作成功',
                   type: 'success',
-                  duration: 1000,
+                  duration: 1500,
                   onClose: () => {
                     this.visible = false
                     this.$emit('refreshDataList')

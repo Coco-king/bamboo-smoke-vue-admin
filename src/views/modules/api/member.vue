@@ -1,33 +1,18 @@
 <template>
   <div class="mod-config">
-    <el-form
-      :inline="true"
-      :model="dataForm"
-      @keyup.enter.native="getDataList()"
-    >
+    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
       <el-form-item>
-        <el-input
-          v-model="dataForm.key"
-          placeholder="参数名"
-          clearable
-        ></el-input>
+        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
+        <el-button v-if="isAuth('api:member:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button
-          v-if="isAuth('api:user:save')"
-          type="primary"
-          @click="addOrUpdateHandle()"
-        >
-          新增
-        </el-button>
-        <el-button
-          v-if="isAuth('api:user:delete')"
+          v-if="isAuth('api:member:delete')"
           type="danger"
           @click="deleteHandle()"
           :disabled="dataListSelections.length <= 0"
-        >
-          批量删除
+        >批量删除
         </el-button>
       </el-form-item>
     </el-form>
@@ -51,10 +36,10 @@
         label="ID"
       ></el-table-column>
       <el-table-column
-        prop="username"
+        prop="memberName"
         header-align="center"
         align="center"
-        label="昵称"
+        label="用户名"
       ></el-table-column>
       <!-- <el-table-column
         prop="password"
@@ -146,6 +131,7 @@
         align="center"
         label="评论数量"
       ></el-table-column> -->
+      <!--（0：未激活邮箱，1：正常，-1：已封禁）-->
       <el-table-column
         prop="status"
         header-align="center"
@@ -166,7 +152,7 @@
         label="最后的登陆时间"
       ></el-table-column>
       <el-table-column
-        prop="isDeleted"
+        prop="deleted"
         header-align="center"
         align="center"
         label="逻辑删除（0：未删除，1：已注销账户）"
@@ -216,18 +202,15 @@
       :page-size="pageSize"
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper"
-    ></el-pagination>
+    >
+    </el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update
-      v-if="addOrUpdateVisible"
-      ref="addOrUpdate"
-      @refreshDataList="getDataList"
-    ></add-or-update>
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
   </div>
 </template>
 
 <script>
-import AddOrUpdate from './user-add-or-update'
+import AddOrUpdate from './member-add-or-update'
 
 export default {
   data() {
@@ -255,7 +238,7 @@ export default {
     getDataList() {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/api/user/list'),
+        url: this.$http.adornUrl('/api/member/list'),
         method: 'get',
         params: this.$http.adornParams({
           page: this.pageIndex,
@@ -308,7 +291,7 @@ export default {
         }
       ).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/api/user/delete'),
+          url: this.$http.adornUrl('/api/member/delete'),
           method: 'delete',
           data: this.$http.adornData(ids, false)
         }).then(({data}) => {

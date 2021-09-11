@@ -10,14 +10,14 @@
     <el-form-item label="回复的评论ID" prop="parentId">
       <el-input v-model="dataForm.parentId" placeholder="回复的评论ID"></el-input>
     </el-form-item>
-    <el-form-item label="评论的内容ID" prop="postId">
-      <el-input v-model="dataForm.postId" placeholder="评论的内容ID"></el-input>
+    <el-form-item label="评论的内容ID" prop="articleId">
+      <el-input v-model="dataForm.articleId" placeholder="评论的内容ID"></el-input>
     </el-form-item>
-    <el-form-item label="评论的用户ID" prop="userId">
-      <el-input v-model="dataForm.userId" placeholder="评论的用户ID"></el-input>
+    <el-form-item label="评论的用户ID" prop="memberId">
+      <el-input v-model="dataForm.memberId" placeholder="评论的用户ID"></el-input>
     </el-form-item>
-    <el-form-item label="用户认证标识" prop="userAuthName">
-      <el-input v-model="dataForm.userAuthName" placeholder="用户认证标识"></el-input>
+    <el-form-item label="用户认证标识" prop="memberAuthName">
+      <el-input v-model="dataForm.memberAuthName" placeholder="用户认证标识"></el-input>
     </el-form-item>
     <el-form-item label="“顶”的数量" prop="voteUp">
       <el-input v-model="dataForm.voteUp" placeholder="“顶”的数量"></el-input>
@@ -54,9 +54,9 @@
           id: 0,
           content: '',
           parentId: '',
-          postId: '',
-          userId: '',
-          userAuthName: '',
+          articleId: '',
+          memberId: '',
+          memberAuthName: '',
           voteUp: '',
           voteDown: '',
           level: '',
@@ -71,13 +71,13 @@
           parentId: [
             { required: true, message: '回复的评论ID不能为空', trigger: 'blur' }
           ],
-          postId: [
+          articleId: [
             { required: true, message: '评论的内容ID不能为空', trigger: 'blur' }
           ],
-          userId: [
+          memberId: [
             { required: true, message: '评论的用户ID不能为空', trigger: 'blur' }
           ],
-          userAuthName: [
+          memberAuthName: [
             { required: true, message: '用户认证标识不能为空', trigger: 'blur' }
           ],
           voteUp: [
@@ -116,9 +116,9 @@
               if (data && data.code === 0) {
                 this.dataForm.content = data.comment.content
                 this.dataForm.parentId = data.comment.parentId
-                this.dataForm.postId = data.comment.postId
-                this.dataForm.userId = data.comment.userId
-                this.dataForm.userAuthName = data.comment.userAuthName
+                this.dataForm.articleId = data.comment.articleId
+                this.dataForm.memberId = data.comment.memberId
+                this.dataForm.memberAuthName = data.comment.memberAuthName
                 this.dataForm.voteUp = data.comment.voteUp
                 this.dataForm.voteDown = data.comment.voteDown
                 this.dataForm.level = data.comment.level
@@ -141,9 +141,9 @@
                 'id': this.dataForm.id || undefined,
                 'content': this.dataForm.content,
                 'parentId': this.dataForm.parentId,
-                'postId': this.dataForm.postId,
-                'userId': this.dataForm.userId,
-                'userAuthName': this.dataForm.userAuthName,
+                'articleId': this.dataForm.articleId,
+                'memberId': this.dataForm.memberId,
+                'memberAuthName': this.dataForm.memberAuthName,
                 'voteUp': this.dataForm.voteUp,
                 'voteDown': this.dataForm.voteDown,
                 'level': this.dataForm.level,
@@ -156,7 +156,7 @@
                 this.$message({
                   message: '操作成功',
                   type: 'success',
-                  duration: 1000,
+                  duration: 1500,
                   onClose: () => {
                     this.visible = false
                     this.$emit('refreshDataList')

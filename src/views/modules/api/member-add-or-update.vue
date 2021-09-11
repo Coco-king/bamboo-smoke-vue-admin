@@ -36,8 +36,8 @@
       </el-row>
       <el-row>
         <el-col :span="11">
-          <el-form-item label="昵称" prop="username">
-            <el-input v-model="dataForm.username" placeholder="昵称"></el-input>
+          <el-form-item label="用户名" prop="memberName">
+            <el-input v-model="dataForm.memberName" placeholder="昵称"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="1">&nbsp;</el-col>
@@ -221,7 +221,7 @@ export default {
       avatarUrl: '',
       dataForm: {
         id: 0,
-        username: '',
+        memberName: '',
         password: '',
         rePass: '',
         authName: '',
@@ -238,7 +238,7 @@ export default {
         status: '0'
       },
       dataRule: {
-        username: [
+        memberName: [
           {required: true, message: '昵称不能为空', trigger: 'blur'}
         ],
         password: [
@@ -301,32 +301,32 @@ export default {
         this.$refs['dataForm'].resetFields()
         if (this.dataForm.id) {
           this.$http({
-            url: this.$http.adornUrl(`/api/user/info/${this.dataForm.id}`),
+            url: this.$http.adornUrl(`/api/member/info/${this.dataForm.id}`),
             method: 'get',
             params: this.$http.adornParams()
           }).then(({data}) => {
             if (data && data.code === 0) {
-              this.dataForm.username = data.user.username
-              this.dataForm.password = data.user.password
-              this.dataForm.authName = data.user.authName
-              this.dataForm.email = data.user.email
-              this.dataForm.mobile = data.user.mobile
-              this.dataForm.city = data.user.city
-              this.dataForm.point = data.user.point
-              this.dataForm.sign = data.user.sign
-              this.dataForm.gender = data.user.gender
-              this.dataForm.wechat = data.user.wechat
-              this.dataForm.vipLevel = data.user.vipLevel
-              this.dataForm.birthday = data.user.birthday
-              this.dataForm.avatar = data.user.avatar
-              this.dataForm.postCount = data.user.postCount
-              this.dataForm.commentCount = data.user.commentCount
-              this.dataForm.status = data.user.status
-              this.dataForm.code = data.user.code
-              this.dataForm.lastLoginTime = data.user.lastLoginTime
-              this.dataForm.isDeleted = data.user.isDeleted
-              this.dataForm.createTime = data.user.createTime
-              this.dataForm.updateTime = data.user.updateTime
+              this.dataForm.memberName = data.member.memberName
+              this.dataForm.password = data.member.password
+              this.dataForm.authName = data.member.authName
+              this.dataForm.email = data.member.email
+              this.dataForm.mobile = data.member.mobile
+              this.dataForm.city = data.member.city
+              this.dataForm.point = data.member.point
+              this.dataForm.sign = data.member.sign
+              this.dataForm.gender = data.member.gender
+              this.dataForm.wechat = data.member.wechat
+              this.dataForm.vipLevel = data.member.vipLevel
+              this.dataForm.birthday = data.member.birthday
+              this.dataForm.avatar = data.member.avatar
+              this.dataForm.postCount = data.member.postCount
+              this.dataForm.commentCount = data.member.commentCount
+              this.dataForm.status = data.member.status
+              this.dataForm.code = data.member.code
+              this.dataForm.lastLoginTime = data.member.lastLoginTime
+              this.dataForm.deleted = data.member.deleted
+              this.dataForm.createTime = data.member.createTime
+              this.dataForm.updateTime = data.member.updateTime
             }
           })
         }
@@ -338,12 +338,12 @@ export default {
         if (valid) {
           this.$http({
             url: this.$http.adornUrl(
-              `/api/user/${!this.dataForm.id ? 'save' : 'update'}`
+              `/api/member/${!this.dataForm.id ? 'save' : 'update'}`
             ),
             method: `${!this.dataForm.id ? 'post' : 'put'}`,
             data: this.$http.adornData({
               id: this.dataForm.id || undefined,
-              username: this.dataForm.username,
+              memberName: this.dataForm.memberName,
               password: this.dataForm.password,
               salt: this.dataForm.salt,
               authName: this.dataForm.authName,
@@ -362,7 +362,7 @@ export default {
               status: this.dataForm.status,
               code: this.dataForm.code,
               lastLoginTime: this.dataForm.lastLoginTime,
-              isDeleted: this.dataForm.isDeleted,
+              deleted: this.dataForm.deleted,
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })

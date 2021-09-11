@@ -4,8 +4,8 @@
     :close-on-click-modal="false"
     :visible.sync="visible">
     <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()" label-width="80px">
-    <el-form-item label="用户ID" prop="userId">
-      <el-input v-model="dataForm.userId" placeholder="用户ID"></el-input>
+    <el-form-item label="用户ID" prop="memberId">
+      <el-input v-model="dataForm.memberId" placeholder="用户ID"></el-input>
     </el-form-item>
     <el-form-item label="社交用户id" prop="socialUid">
       <el-input v-model="dataForm.socialUid" placeholder="社交用户id"></el-input>
@@ -49,7 +49,7 @@
         visible: false,
         dataForm: {
           id: 0,
-          userId: '',
+          memberId: '',
           socialUid: '',
           socialName: '',
           socialType: '',
@@ -61,7 +61,7 @@
           updateTime: ''
         },
         dataRule: {
-          userId: [
+          memberId: [
             { required: true, message: '用户ID不能为空', trigger: 'blur' }
           ],
           socialUid: [
@@ -102,21 +102,21 @@
           this.$refs['dataForm'].resetFields()
           if (this.dataForm.id) {
             this.$http({
-              url: this.$http.adornUrl(`/api/usersocial/info/${this.dataForm.id}`),
+              url: this.$http.adornUrl(`/api/membersocial/info/${this.dataForm.id}`),
               method: 'get',
               params: this.$http.adornParams()
             }).then(({data}) => {
               if (data && data.code === 0) {
-                this.dataForm.userId = data.userSocial.userId
-                this.dataForm.socialUid = data.userSocial.socialUid
-                this.dataForm.socialName = data.userSocial.socialName
-                this.dataForm.socialType = data.userSocial.socialType
-                this.dataForm.accessToken = data.userSocial.accessToken
-                this.dataForm.refreshToken = data.userSocial.refreshToken
-                this.dataForm.expiresIn = data.userSocial.expiresIn
-                this.dataForm.status = data.userSocial.status
-                this.dataForm.createTime = data.userSocial.createTime
-                this.dataForm.updateTime = data.userSocial.updateTime
+                this.dataForm.memberId = data.memberSocial.memberId
+                this.dataForm.socialUid = data.memberSocial.socialUid
+                this.dataForm.socialName = data.memberSocial.socialName
+                this.dataForm.socialType = data.memberSocial.socialType
+                this.dataForm.accessToken = data.memberSocial.accessToken
+                this.dataForm.refreshToken = data.memberSocial.refreshToken
+                this.dataForm.expiresIn = data.memberSocial.expiresIn
+                this.dataForm.status = data.memberSocial.status
+                this.dataForm.createTime = data.memberSocial.createTime
+                this.dataForm.updateTime = data.memberSocial.updateTime
               }
             })
           }
@@ -127,11 +127,11 @@
         this.$refs['dataForm'].validate((valid) => {
           if (valid) {
             this.$http({
-              url: this.$http.adornUrl(`/api/usersocial/${!this.dataForm.id ? 'save' : 'update'}`),
+              url: this.$http.adornUrl(`/api/membersocial/${!this.dataForm.id ? 'save' : 'update'}`),
               method: `${!this.dataForm.id ? 'post' : 'put'}`,
               data: this.$http.adornData({
                 'id': this.dataForm.id || undefined,
-                'userId': this.dataForm.userId,
+                'memberId': this.dataForm.memberId,
                 'socialUid': this.dataForm.socialUid,
                 'socialName': this.dataForm.socialName,
                 'socialType': this.dataForm.socialType,
@@ -147,7 +147,7 @@
                 this.$message({
                   message: '操作成功',
                   type: 'success',
-                  duration: 1000,
+                  duration: 1500,
                   onClose: () => {
                     this.visible = false
                     this.$emit('refreshDataList')

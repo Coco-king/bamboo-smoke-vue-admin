@@ -6,8 +6,8 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('api:usersocial:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
-        <el-button v-if="isAuth('api:usersocial:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
+        <el-button v-if="isAuth('api:membersocial:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
+        <el-button v-if="isAuth('api:membersocial:delete')" type="danger" @click="deleteHandle()" :disabled="dataListSelections.length <= 0">批量删除</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -29,7 +29,7 @@
         label="主键ID">
       </el-table-column>
       <el-table-column
-        prop="userId"
+        prop="memberId"
         header-align="center"
         align="center"
         label="用户ID">
@@ -115,7 +115,7 @@
 </template>
 
 <script>
-  import AddOrUpdate from './usersocial-add-or-update'
+  import AddOrUpdate from './membersocial-add-or-update'
 
   export default {
     data () {
@@ -143,7 +143,7 @@
       getDataList () {
         this.dataListLoading = true
         this.$http({
-          url: this.$http.adornUrl('/api/usersocial/list'),
+          url: this.$http.adornUrl('/api/membersocial/list'),
           method: 'get',
           params: this.$http.adornParams({
             'page': this.pageIndex,
@@ -192,7 +192,7 @@
           type: 'warning'
         }).then(() => {
           this.$http({
-            url: this.$http.adornUrl('/api/usersocial/delete'),
+            url: this.$http.adornUrl('/api/membersocial/delete'),
             method: 'delete',
             data: this.$http.adornData(ids, false)
           }).then(({data}) => {
