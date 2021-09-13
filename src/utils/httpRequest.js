@@ -48,28 +48,28 @@ http.adornUrl = (actionName) => {
 /**
  * get请求参数处理
  * @param {*} params 参数对象
- * @param {*} openDefultParams 是否开启默认参数?
+ * @param {*} openDefaultParams 是否开启默认参数?
  */
-http.adornParams = (params = {}, openDefultParams = true) => {
+http.adornParams = (params = {}, openDefaultParams = true) => {
   var defaults = {
     't': new Date().getTime()
   }
-  return openDefultParams ? merge(defaults, params) : params
+  return openDefaultParams ? merge(defaults, params) : params
 }
 
 /**
  * post请求数据处理
  * @param {*} data 数据对象
- * @param {*} openDefultdata 是否开启默认数据?
+ * @param {*} openDefaultParams 是否开启默认数据?
  * @param {*} contentType 数据格式
  *  json: 'application/json; charset=utf-8'
  *  form: 'application/x-www-form-urlencoded; charset=utf-8'
  */
-http.adornData = (data = {}, openDefultdata = true, contentType = 'json') => {
+http.adornData = (data = {}, openDefaultParams = true, contentType = 'json') => {
   var defaults = {
     't': new Date().getTime()
   }
-  data = openDefultdata ? merge(defaults, data) : data
+  data = openDefaultParams ? merge(defaults, data) : data
   return contentType === 'json' ? JSON.stringify(data) : qs.stringify(data)
 }
 
