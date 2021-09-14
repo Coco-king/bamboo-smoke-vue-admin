@@ -1,18 +1,33 @@
 <template>
   <div class="mod-config">
-    <el-form :inline="true" :model="dataForm" @keyup.enter.native="getDataList()">
+    <el-form
+      :inline="true"
+      :model="dataForm"
+      @keyup.enter.native="getDataList()"
+    >
       <el-form-item>
-        <el-input v-model="dataForm.key" placeholder="参数名" clearable></el-input>
+        <el-input
+          v-model="dataForm.key"
+          placeholder="参数名"
+          clearable
+        ></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
-        <el-button v-if="isAuth('api:member:save')" type="primary" @click="addOrUpdateHandle()">新增</el-button>
         <el-button
-          v-if="isAuth('api:member:delete')"
+          v-if="isAuth('api:memberaction:save')"
+          type="primary"
+          @click="addOrUpdateHandle()"
+        >
+          新增
+        </el-button>
+        <el-button
+          v-if="isAuth('api:memberaction:delete')"
           type="danger"
           @click="deleteHandle()"
           :disabled="dataListSelections.length <= 0"
-        >批量删除
+        >
+          批量删除
         </el-button>
       </el-form-item>
     </el-form>
@@ -33,142 +48,56 @@
         prop="id"
         header-align="center"
         align="center"
-        label="ID"
+        label="主键ID"
       ></el-table-column>
       <el-table-column
-        prop="memberName"
+        prop="memberId"
         header-align="center"
         align="center"
-        label="用户名"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="password"
-        header-align="center"
-        align="center"
-        label="密码"
+        label="用户ID"
       ></el-table-column>
       <el-table-column
-        prop="salt"
+        prop="action"
         header-align="center"
         align="center"
-        label="盐"
-      ></el-table-column> -->
-      <el-table-column
-        prop="authName"
-        header-align="center"
-        align="center"
-        label="社区认证"
+        label="动作类型"
       ></el-table-column>
-      <el-table-column
-        prop="email"
-        header-align="center"
-        align="center"
-        label="邮箱"
-      ></el-table-column>
-      <el-table-column
-        prop="mobile"
-        header-align="center"
-        align="center"
-        label="手机电话"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="city"
-        header-align="center"
-        align="center"
-        label="所在城市"
-      ></el-table-column> -->
       <el-table-column
         prop="point"
         header-align="center"
         align="center"
-        label="积分"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="sign"
-        header-align="center"
-        align="center"
-        label="个性签名"
-      ></el-table-column> -->
-      <el-table-column
-        prop="gender"
-        header-align="center"
-        align="center"
-        label="性别"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="wechat"
-        header-align="center"
-        align="center"
-        label="微信号"
-      ></el-table-column> -->
-      <el-table-column
-        prop="vipLevel"
-        header-align="center"
-        align="center"
-        label="vip等级"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="birthday"
-        header-align="center"
-        align="center"
-        label="生日"
-      ></el-table-column> -->
-      <el-table-column
-        prop="avatar"
-        header-align="center"
-        align="center"
-        label="头像"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="postCount"
-        header-align="center"
-        align="center"
-        label="内容数量"
+        label="得分"
       ></el-table-column>
       <el-table-column
-        prop="commentCount"
+        prop="articleId"
         header-align="center"
         align="center"
-        label="评论数量"
-      ></el-table-column> -->
-      <!--（0：未激活邮箱，1：正常，-1：已封禁）-->
+        label="关联的帖子ID"
+      ></el-table-column>
+      <el-table-column
+        prop="commentId"
+        header-align="center"
+        align="center"
+        label="关联的评论ID"
+      ></el-table-column>
       <el-table-column
         prop="status"
         header-align="center"
         align="center"
         label="状态"
       ></el-table-column>
-      <!-- （0：未激活邮箱，1：正常，-1：已封禁）-->
-      <!-- <el-table-column
-        prop="code"
-        header-align="center"
-        align="center"
-        label="激活邮件地址"
-      ></el-table-column>
-      <el-table-column
-        prop="lastLoginTime"
-        header-align="center"
-        align="center"
-        label="最后的登陆时间"
-      ></el-table-column>
-      <el-table-column
-        prop="deleted"
-        header-align="center"
-        align="center"
-        label="逻辑删除（0：未删除，1：已注销账户）"
-      ></el-table-column> -->
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
-        label="创建日期"
+        label="创建时间"
       ></el-table-column>
-      <!-- <el-table-column
+      <el-table-column
         prop="updateTime"
         header-align="center"
         align="center"
         label="修改时间"
-      ></el-table-column> -->
+      ></el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
@@ -202,15 +131,18 @@
       :page-size="pageSize"
       :total="totalPage"
       layout="total, sizes, prev, pager, next, jumper"
-    >
-    </el-pagination>
+    ></el-pagination>
     <!-- 弹窗, 新增 / 修改 -->
-    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList"></add-or-update>
+    <add-or-update
+      v-if="addOrUpdateVisible"
+      ref="addOrUpdate"
+      @refreshDataList="getDataList"
+    ></add-or-update>
   </div>
 </template>
 
 <script>
-import AddOrUpdate from './member-add-or-update'
+import AddOrUpdate from './memberaction-add-or-update'
 
 export default {
   data() {
@@ -238,14 +170,14 @@ export default {
     getDataList() {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/api/member/list'),
+        url: this.$http.adornUrl('/admin/memberaction/list'),
         method: 'get',
         params: this.$http.adornParams({
           page: this.pageIndex,
           limit: this.pageSize,
           key: this.dataForm.key
         })
-      }).then(({data}) => {
+      }).then(({ data }) => {
         if (data && data.code === 0) {
           this.dataList = data.page.list
           this.totalPage = data.page.totalCount
@@ -291,10 +223,10 @@ export default {
         }
       ).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/api/member/delete'),
+          url: this.$http.adornUrl('/admin/memberaction/delete'),
           method: 'delete',
           data: this.$http.adornData(ids, false)
-        }).then(({data}) => {
+        }).then(({ data }) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
