@@ -9,9 +9,9 @@
       :rules="dataRule"
       ref="dataForm"
       @keyup.enter.native="dataFormSubmit()"
-      label-width="80px"
+      label-width="120px"
     >
-      <el-form-item label="该地区的上级区域" prop="parentId">
+      <el-form-item label="上级区域" prop="parentId">
         <el-input
           v-model="dataForm.parentId"
           placeholder="该地区的上级区域"
@@ -25,24 +25,6 @@
       </el-form-item>
       <el-form-item label="区域层级" prop="level">
         <el-input v-model="dataForm.level" placeholder="区域层级"></el-input>
-      </el-form-item>
-      <el-form-item label="逻辑删除（0：未删除，1：已删除）" prop="deleted">
-        <el-input
-          v-model="dataForm.deleted"
-          placeholder="逻辑删除（0：未删除，1：已删除）"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="创建日期" prop="createTime">
-        <el-input
-          v-model="dataForm.createTime"
-          placeholder="创建日期"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="最后修改日期" prop="updateTime">
-        <el-input
-          v-model="dataForm.updateTime"
-          placeholder="最后修改日期"
-        ></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -63,7 +45,6 @@ export default {
         name: '',
         value: '',
         level: '',
-        deleted: '',
         createTime: '',
         updateTime: ''
       },
@@ -71,7 +52,7 @@ export default {
         parentId: [
           {
             required: true,
-            message: '该地区的上级区域不能为空',
+            message: '该地区的上级区域不能为空（若没有则填"0"）',
             trigger: 'blur'
           }
         ],
@@ -83,19 +64,6 @@ export default {
         ],
         level: [
           { required: true, message: '区域层级不能为空', trigger: 'blur' }
-        ],
-        deleted: [
-          {
-            required: true,
-            message: '逻辑删除（0：未删除，1：已删除）不能为空',
-            trigger: 'blur'
-          }
-        ],
-        createTime: [
-          { required: true, message: '创建日期不能为空', trigger: 'blur' }
-        ],
-        updateTime: [
-          { required: true, message: '最后修改日期不能为空', trigger: 'blur' }
         ]
       }
     }
@@ -117,9 +85,6 @@ export default {
               this.dataForm.name = data.region.name
               this.dataForm.value = data.region.value
               this.dataForm.level = data.region.level
-              this.dataForm.deleted = data.region.deleted
-              this.dataForm.createTime = data.region.createTime
-              this.dataForm.updateTime = data.region.updateTime
             }
           })
         }
@@ -139,10 +104,7 @@ export default {
               parentId: this.dataForm.parentId,
               name: this.dataForm.name,
               value: this.dataForm.value,
-              level: this.dataForm.level,
-              deleted: this.dataForm.deleted,
-              createTime: this.dataForm.createTime,
-              updateTime: this.dataForm.updateTime
+              level: this.dataForm.level
             })
           }).then(({ data }) => {
             if (data && data.code === 0) {
