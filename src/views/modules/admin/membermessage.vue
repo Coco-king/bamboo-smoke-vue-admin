@@ -15,14 +15,14 @@
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
         <el-button
-          v-if="isAuth('api:membermessage:save')"
+          v-if="isAuth('admin:membermessage:save')"
           type="primary"
           @click="addOrUpdateHandle()"
         >
           新增
         </el-button>
         <el-button
-          v-if="isAuth('api:membermessage:delete')"
+          v-if="isAuth('admin:membermessage:delete')"
           type="danger"
           @click="deleteHandle()"
           :disabled="dataListSelections.length <= 0"
