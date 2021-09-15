@@ -183,7 +183,7 @@ export default {
         params: this.$http.adornParams()
       })
         .then(({ data }) => {
-          console.log(data)
+          //console.log(data)
           this.menuList = treeDataTranslate(data.menuList, 'menuId')
         })
         .then(() => {

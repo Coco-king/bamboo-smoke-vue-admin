@@ -6,17 +6,17 @@
       @keyup.enter.native="getDataList()"
     >
       <el-form-item>
-        <el-input
-          v-model="dataForm.key"
-          placeholder="参数名"
-          clearable
-        ></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button @click="getDataList()">查询</el-button>
+        <el-button @click="getDataList()">刷新</el-button>
         <el-button
           v-if="isAuth('admin:region:save')"
           type="primary"
+          @click="addOrUpdateHandle()"
+        >
+          新增
+        </el-button>
+        <el-button
+          v-if="isAuth('admin:region:init')"
+          type="success"
           @click="initRegionHandle()"
         >
           初始化
@@ -38,16 +38,20 @@
       node-key="id"
       accordion
       @check-change="checkChange"
-      :expand-on-click-node="true"
+      :expand-on-click-node="false"
     >
       <span class="custom-tree-node" slot-scope="{ node, data }">
         <span>{{ data.name }}</span>
         <span>
-          <el-button type="text" size="mini" @click="() => append(data)">
-            Append
+          <el-button
+            type="text"
+            size="mini"
+            @click="() => addOrUpdateHandle(data.id)"
+          >
+            修改
           </el-button>
           <el-button type="text" size="mini" @click="() => remove(node, data)">
-            Delete
+            删除
           </el-button>
         </span>
       </span>
@@ -86,9 +90,6 @@ export default {
     checkChange() {
       this.dataListSelections = this.$refs.tree.getCheckedKeys()
     },
-    append(data) {
-      console.log(data)
-    },
     remove(node, data) {
       const parent = node.parent
       const children = parent.data.children || parent.data
@@ -99,11 +100,8 @@ export default {
     getDataList() {
       this.dataListLoading = true
       this.$http({
-        url: this.$http.adornUrl('/admin/region/list/all'),
-        method: 'get',
-        params: this.$http.adornParams({
-          key: this.dataForm.key
-        })
+        url: this.$http.adornUrl('/admin/region/list/tree'),
+        method: 'get'
       }).then(({ data }) => {
         if (data && data.code === 0) {
           this.dataList = data.list
@@ -175,3 +173,14 @@ export default {
   }
 }
 </script>
+
+<style>
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  padding-right: 8px;
+}
+</style>

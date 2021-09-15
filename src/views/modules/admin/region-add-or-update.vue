@@ -12,10 +12,13 @@
       label-width="120px"
     >
       <el-form-item label="上级区域" prop="parentId">
-        <el-input
+        <el-cascader
           v-model="dataForm.parentId"
-          placeholder="该地区的上级区域"
-        ></el-input>
+          :options="regionList"
+          :props="props"
+          @change="handleChange"
+          clearable
+        ></el-cascader>
       </el-form-item>
       <el-form-item label="地区名称" prop="name">
         <el-input v-model="dataForm.name" placeholder="地区名称"></el-input>
@@ -24,7 +27,11 @@
         <el-input v-model="dataForm.value" placeholder="地区对应值"></el-input>
       </el-form-item>
       <el-form-item label="区域层级" prop="level">
-        <el-input v-model="dataForm.level" placeholder="区域层级"></el-input>
+        <el-input
+          v-model="dataForm.level"
+          placeholder="区域层级"
+          :disabled="this.dataForm.id != 0"
+        ></el-input>
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
@@ -39,20 +46,25 @@ export default {
   data() {
     return {
       visible: false,
+      regionList: [],
+      props: {
+        checkStrictly: true,
+        label: 'name',
+        children: 'children',
+        expandTrigger: 'hover'
+      },
       dataForm: {
         id: 0,
         parentId: '',
         name: '',
         value: '',
-        level: '',
-        createTime: '',
-        updateTime: ''
+        level: ''
       },
       dataRule: {
         parentId: [
           {
             required: true,
-            message: '该地区的上级区域不能为空（若没有则填"0"）',
+            message: '该地区的上级区域不能为空',
             trigger: 'blur'
           }
         ],
@@ -69,22 +81,38 @@ export default {
     }
   },
   methods: {
+    handleChange(value) {
+      console.log(value)
+    },
     init(id) {
       this.dataForm.id = id || 0
-      this.visible = true
-      this.$nextTick(() => {
-        this.$refs['dataForm'].resetFields()
-        if (this.dataForm.id) {
-          this.$http({
-            url: this.$http.adornUrl(`/admin/region/info/${this.dataForm.id}`),
-            method: 'get',
-            params: this.$http.adornParams()
-          }).then(({ data }) => {
-            if (data && data.code === 0) {
-              this.dataForm.parentId = data.region.parentId
-              this.dataForm.name = data.region.name
-              this.dataForm.value = data.region.value
-              this.dataForm.level = data.region.level
+
+      this.$http({
+        url: this.$http.adornUrl('/admin/region/list/tree'),
+        method: 'get',
+        params: this.$http.adornParams({ maxLevel: 2 })
+      }).then(({ data }) => {
+        if (data && data.code === 0) {
+          this.regionList = data.list
+          this.visible = true
+          this.$nextTick(() => {
+            this.$refs['dataForm'].resetFields()
+            if (this.dataForm.id) {
+              this.$http({
+                url: this.$http.adornUrl(
+                  `/admin/region/info/${this.dataForm.id}`
+                ),
+                method: 'get',
+                params: this.$http.adornParams()
+              }).then(({ data }) => {
+                if (data && data.code === 0) {
+                  this.dataForm.id = data.region.id
+                  this.dataForm.parentId = data.region.parentId
+                  this.dataForm.name = data.region.name
+                  this.dataForm.value = data.region.value
+                  this.dataForm.level = data.region.level
+                }
+              })
             }
           })
         }
