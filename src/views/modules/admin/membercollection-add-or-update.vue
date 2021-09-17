@@ -62,10 +62,10 @@ export default {
       },
       dataRule: {
         memberId: [
-          { required: true, message: '用户ID不能为空', trigger: 'blur' }
+          {required: true, message: '用户ID不能为空', trigger: 'blur'}
         ],
         articleId: [
-          { required: true, message: '文章ID不能为空', trigger: 'blur' }
+          {required: true, message: '文章ID不能为空', trigger: 'blur'}
         ],
         articleMemberId: [
           {
@@ -75,13 +75,13 @@ export default {
           }
         ],
         status: [
-          { required: true, message: '消息状态不能为空', trigger: 'blur' }
+          {required: true, message: '消息状态不能为空', trigger: 'blur'}
         ],
         createTime: [
-          { required: true, message: '创建时间不能为空', trigger: 'blur' }
+          {required: true, message: '创建时间不能为空', trigger: 'blur'}
         ],
         updateTime: [
-          { required: true, message: '修改时间不能为空', trigger: 'blur' }
+          {required: true, message: '修改时间不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -99,7 +99,7 @@ export default {
             ),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.memberId = data.memberCollection.memberId
               this.dataForm.articleId = data.memberCollection.articleId
@@ -131,12 +131,12 @@ export default {
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')

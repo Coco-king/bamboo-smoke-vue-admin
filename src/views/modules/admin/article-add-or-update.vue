@@ -123,11 +123,11 @@ export default {
         updateTime: ''
       },
       dataRule: {
-        title: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
+        title: [{required: true, message: '标题不能为空', trigger: 'blur'}],
         coverImage: [
-          { required: true, message: '标题不能为空', trigger: 'blur' }
+          {required: true, message: '标题不能为空', trigger: 'blur'}
         ],
-        content: [{ required: true, message: '内容不能为空', trigger: 'blur' }],
+        content: [{required: true, message: '内容不能为空', trigger: 'blur'}],
         editMode: [
           {
             required: true,
@@ -136,31 +136,31 @@ export default {
           }
         ],
         categoryId: [
-          { required: true, message: '文章所属分类ID不能为空', trigger: 'blur' }
+          {required: true, message: '文章所属分类ID不能为空', trigger: 'blur'}
         ],
         memberId: [
-          { required: true, message: '用户ID不能为空', trigger: 'blur' }
+          {required: true, message: '用户ID不能为空', trigger: 'blur'}
         ],
         memberAuthName: [
-          { required: true, message: '用户认证标识不能为空', trigger: 'blur' }
+          {required: true, message: '用户认证标识不能为空', trigger: 'blur'}
         ],
         voteUp: [
-          { required: true, message: '点赞人数不能为空', trigger: 'blur' }
+          {required: true, message: '点赞人数不能为空', trigger: 'blur'}
         ],
         voteDown: [
-          { required: true, message: '点踩人数不能为空', trigger: 'blur' }
+          {required: true, message: '点踩人数不能为空', trigger: 'blur'}
         ],
         viewCount: [
-          { required: true, message: '访问量不能为空', trigger: 'blur' }
+          {required: true, message: '访问量不能为空', trigger: 'blur'}
         ],
         commentCount: [
-          { required: true, message: '评论数量不能为空', trigger: 'blur' }
+          {required: true, message: '评论数量不能为空', trigger: 'blur'}
         ],
         recommend: [
-          { required: true, message: '是否为精华不能为空', trigger: 'blur' }
+          {required: true, message: '是否为精华不能为空', trigger: 'blur'}
         ],
         level: [
-          { required: true, message: '置顶等级不能为空', trigger: 'blur' }
+          {required: true, message: '置顶等级不能为空', trigger: 'blur'}
         ],
         status: [
           {
@@ -177,10 +177,10 @@ export default {
           }
         ],
         createTime: [
-          { required: true, message: '创建日期不能为空', trigger: 'blur' }
+          {required: true, message: '创建日期不能为空', trigger: 'blur'}
         ],
         updateTime: [
-          { required: true, message: '最后更新日期不能为空', trigger: 'blur' }
+          {required: true, message: '最后更新日期不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -196,7 +196,7 @@ export default {
             url: this.$http.adornUrl(`/admin/article/info/${this.dataForm.id}`),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.title = data.article.title
               this.dataForm.coverImage = data.article.coverImage
@@ -249,12 +249,12 @@ export default {
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')

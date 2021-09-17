@@ -96,16 +96,16 @@ export default {
       },
       dataRule: {
         memberId: [
-          { required: true, message: '用户ID不能为空', trigger: 'blur' }
+          {required: true, message: '用户ID不能为空', trigger: 'blur'}
         ],
         socialUid: [
-          { required: true, message: '社交用户id不能为空', trigger: 'blur' }
+          {required: true, message: '社交用户id不能为空', trigger: 'blur'}
         ],
         socialName: [
-          { required: true, message: '社交平台名称不能为空', trigger: 'blur' }
+          {required: true, message: '社交平台名称不能为空', trigger: 'blur'}
         ],
         socialType: [
-          { required: true, message: '社交平台类型不能为空', trigger: 'blur' }
+          {required: true, message: '社交平台类型不能为空', trigger: 'blur'}
         ],
         accessToken: [
           {
@@ -130,13 +130,13 @@ export default {
           }
         ],
         status: [
-          { required: true, message: '绑定状态不能为空', trigger: 'blur' }
+          {required: true, message: '绑定状态不能为空', trigger: 'blur'}
         ],
         createTime: [
-          { required: true, message: '创建日期不能为空', trigger: 'blur' }
+          {required: true, message: '创建日期不能为空', trigger: 'blur'}
         ],
         updateTime: [
-          { required: true, message: '修改日期不能为空', trigger: 'blur' }
+          {required: true, message: '修改日期不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -154,7 +154,7 @@ export default {
             ),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.memberId = data.memberSocial.memberId
               this.dataForm.socialUid = data.memberSocial.socialUid
@@ -193,12 +193,12 @@ export default {
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')

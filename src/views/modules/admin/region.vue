@@ -21,46 +21,44 @@
         >
           初始化
         </el-button>
-        <el-button
-          v-if="isAuth('admin:region:delete')"
-          type="danger"
-          @click="deleteHandle()"
-          :disabled="dataListSelections.length <= 0"
-        >
-          批量删除
-        </el-button>
       </el-form-item>
     </el-form>
-    <el-tree
-      ref="tree"
+    <el-table
       :data="dataList"
-      show-checkbox
-      node-key="id"
-      accordion
-      @check-change="checkChange"
-      :expand-on-click-node="false"
+      style="width: 100%;margin-bottom: 20px;"
+      row-key="id"
+      border
+      stripe
+      lazy
+      :load="load"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
     >
-      <span class="custom-tree-node" slot-scope="{ node, data }">
-        <span>{{ data.name }}</span>
-        <span>
+      <el-table-column prop="name" label="地区" sortable></el-table-column>
+      <el-table-column prop="value" label="地区编号" sortable></el-table-column>
+      <el-table-column prop="level" label="地区层级"></el-table-column>
+      <el-table-column prop="createTime" label="创建时间"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="150">
+        <template slot-scope="scope">
           <el-button
-            type="text"
+            v-if="scope.row.level !== 0"
+            @click="addOrUpdateHandle(scope.row.id)"
+            type="primary"
+            plain
             size="mini"
-            @click="() => addOrUpdateHandle(data.id)"
           >
             修改
           </el-button>
-          <el-button type="text" size="mini" @click="() => remove(node, data)">
+          <el-button type="danger" plain size="mini" @click="deleteHandle(scope.row)">
             删除
           </el-button>
-        </span>
-      </span>
-    </el-tree>
+        </template>
+      </el-table-column>
+    </el-table>
     <!-- 弹窗, 新增 / 修改 -->
     <add-or-update
       v-if="addOrUpdateVisible"
       ref="addOrUpdate"
-      @refreshDataList="getDataList"
+      @refreshDataList="refreshData"
     ></add-or-update>
   </div>
 </template>
@@ -76,8 +74,8 @@ export default {
       },
       dataList: [],
       dataListLoading: false,
-      dataListSelections: [],
-      addOrUpdateVisible: false
+      addOrUpdateVisible: false,
+      maps: new Map()
     }
   },
   components: {
@@ -87,28 +85,49 @@ export default {
     this.getDataList()
   },
   methods: {
-    checkChange() {
-      this.dataListSelections = this.$refs.tree.getCheckedKeys()
+    refreshData(data) {
+      const newParentId = data[0]
+      const oldParentId = data[1]
+      // 懒加载刷新旧的父级
+      if (oldParentId && this.maps.get(oldParentId)) {
+        const {tree, treeNode, resolve} = this.maps.get(oldParentId)
+        this.load(tree, treeNode, resolve)
+      }
+      // 懒加载刷新新的父级
+      if (newParentId && this.maps.get(newParentId)) {
+        const {tree, treeNode, resolve} = this.maps.get(newParentId)
+        this.load(tree, treeNode, resolve)
+      }
     },
-    remove(node, data) {
-      const parent = node.parent
-      const children = parent.data.children || parent.data
-      const index = children.findIndex(d => d.id === data.id)
-      children.splice(index, 1)
+    load(tree, treeNode, resolve) {
+      const id = tree.id
+      this.maps.set(id, {tree, treeNode, resolve})
+      this.fetchData(id).then(({data}) => {
+        if (data && data.code === 0) {
+          resolve(data.list)
+        } else {
+          resolve([])
+        }
+      })
     },
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true
-      this.$http({
-        url: this.$http.adornUrl('/admin/region/list/tree'),
-        method: 'get'
-      }).then(({ data }) => {
+      this.fetchData(1).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.list
         } else {
           this.dataList = []
         }
         this.dataListLoading = false
+      })
+    },
+    // 拉取数据
+    fetchData(rootId) {
+      return this.$http({
+        url: this.$http.adornUrl('/admin/region/list/tree'),
+        method: 'get',
+        params: this.$http.adornParams({parentId: rootId, isLazy: true})
       })
     },
     // 新增 / 修改
@@ -122,7 +141,7 @@ export default {
       this.$http({
         url: this.$http.adornUrl('/admin/region/initRegion'),
         method: 'post'
-      }).then(({ data }) => {
+      }).then(({data}) => {
         if (data && data.code === 0) {
           this.$message({
             message: '初始化成功',
@@ -138,11 +157,9 @@ export default {
       })
     },
     // 删除
-    deleteHandle(id) {
-      console.log(this.dataListSelections)
-      let ids = id ? [id] : this.dataListSelections
+    deleteHandle(row) {
       this.$confirm(
-        `确定对[id=${ids.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`,
+        `确定对【${row.name}】${row.hasChildren ? '以及他的下级区域' : ''}进行删除操作?`,
         '提示',
         {
           confirmButtonText: '确定',
@@ -151,17 +168,17 @@ export default {
         }
       ).then(() => {
         this.$http({
-          url: this.$http.adornUrl('/admin/region/delete'),
+          url: this.$http.adornUrl(`/admin/region/delete/${row.id}`),
           method: 'delete',
-          data: this.$http.adornData(ids, false)
-        }).then(({ data }) => {
+          data: this.$http.adornData({}, false)
+        }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
               type: 'success',
               duration: 1000,
               onClose: () => {
-                this.getDataList()
+                row.id === '1' ? this.getDataList() : this.refreshData([row.parentId])
               }
             })
           } else {

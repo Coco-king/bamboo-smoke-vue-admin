@@ -97,37 +97,37 @@ export default {
       },
       dataRule: {
         content: [
-          { required: true, message: '评论的内容不能为空', trigger: 'blur' }
+          {required: true, message: '评论的内容不能为空', trigger: 'blur'}
         ],
         parentId: [
-          { required: true, message: '回复的评论ID不能为空', trigger: 'blur' }
+          {required: true, message: '回复的评论ID不能为空', trigger: 'blur'}
         ],
         articleId: [
-          { required: true, message: '评论的内容ID不能为空', trigger: 'blur' }
+          {required: true, message: '评论的内容ID不能为空', trigger: 'blur'}
         ],
         memberId: [
-          { required: true, message: '评论的用户ID不能为空', trigger: 'blur' }
+          {required: true, message: '评论的用户ID不能为空', trigger: 'blur'}
         ],
         memberAuthName: [
-          { required: true, message: '用户认证标识不能为空', trigger: 'blur' }
+          {required: true, message: '用户认证标识不能为空', trigger: 'blur'}
         ],
         voteUp: [
-          { required: true, message: '“顶”的数量不能为空', trigger: 'blur' }
+          {required: true, message: '“顶”的数量不能为空', trigger: 'blur'}
         ],
         voteDown: [
-          { required: true, message: '“踩”的数量不能为空', trigger: 'blur' }
+          {required: true, message: '“踩”的数量不能为空', trigger: 'blur'}
         ],
         level: [
-          { required: true, message: '置顶等级不能为空', trigger: 'blur' }
+          {required: true, message: '置顶等级不能为空', trigger: 'blur'}
         ],
         status: [
-          { required: true, message: '评论的状态不能为空', trigger: 'blur' }
+          {required: true, message: '评论的状态不能为空', trigger: 'blur'}
         ],
         createTime: [
-          { required: true, message: '创建时间不能为空', trigger: 'blur' }
+          {required: true, message: '创建时间不能为空', trigger: 'blur'}
         ],
         updateTime: [
-          { required: true, message: '更新时间不能为空', trigger: 'blur' }
+          {required: true, message: '更新时间不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -143,7 +143,7 @@ export default {
             url: this.$http.adornUrl(`/admin/comment/info/${this.dataForm.id}`),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.content = data.comment.content
               this.dataForm.parentId = data.comment.parentId
@@ -184,12 +184,12 @@ export default {
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')

@@ -120,7 +120,7 @@ export default {
           }
         ],
         content: [
-          { required: true, message: '消息内容不能为空', trigger: 'blur' }
+          {required: true, message: '消息内容不能为空', trigger: 'blur'}
         ],
         type: [
           {
@@ -138,10 +138,10 @@ export default {
           }
         ],
         createTime: [
-          { required: true, message: '创建时间不能为空', trigger: 'blur' }
+          {required: true, message: '创建时间不能为空', trigger: 'blur'}
         ],
         updateTime: [
-          { required: true, message: '修改时间不能为空', trigger: 'blur' }
+          {required: true, message: '修改时间不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -159,7 +159,7 @@ export default {
             ),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.frobsMemberId = data.memberMessage.frobsMemberId
               this.dataForm.toMemberId = data.memberMessage.toMemberId
@@ -196,12 +196,12 @@ export default {
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')

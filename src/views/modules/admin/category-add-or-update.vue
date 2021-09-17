@@ -101,14 +101,14 @@ export default {
         updateTime: ''
       },
       dataRule: {
-        name: [{ required: true, message: '标题不能为空', trigger: 'blur' }],
+        name: [{required: true, message: '标题不能为空', trigger: 'blur'}],
         content: [
-          { required: true, message: '内容描述不能为空', trigger: 'blur' }
+          {required: true, message: '内容描述不能为空', trigger: 'blur'}
         ],
         summary: [
-          { required: true, message: '分类概要不能为空', trigger: 'blur' }
+          {required: true, message: '分类概要不能为空', trigger: 'blur'}
         ],
-        icon: [{ required: true, message: '图标不能为空', trigger: 'blur' }],
+        icon: [{required: true, message: '图标不能为空', trigger: 'blur'}],
         articleCount: [
           {
             required: true,
@@ -117,19 +117,19 @@ export default {
           }
         ],
         order: [
-          { required: true, message: '排序编码不能为空', trigger: 'blur' }
+          {required: true, message: '排序编码不能为空', trigger: 'blur'}
         ],
         parentId: [
-          { required: true, message: '父级分类的ID不能为空', trigger: 'blur' }
+          {required: true, message: '父级分类的ID不能为空', trigger: 'blur'}
         ],
         metaKeywords: [
-          { required: true, message: 'SEO关键字不能为空', trigger: 'blur' }
+          {required: true, message: 'SEO关键字不能为空', trigger: 'blur'}
         ],
         metaDescription: [
-          { required: true, message: 'SEO描述内容不能为空', trigger: 'blur' }
+          {required: true, message: 'SEO描述内容不能为空', trigger: 'blur'}
         ],
         status: [
-          { required: true, message: '分类状态不能为空', trigger: 'blur' }
+          {required: true, message: '分类状态不能为空', trigger: 'blur'}
         ],
         deleted: [
           {
@@ -139,10 +139,10 @@ export default {
           }
         ],
         createTime: [
-          { required: true, message: '创建日期不能为空', trigger: 'blur' }
+          {required: true, message: '创建日期不能为空', trigger: 'blur'}
         ],
         updateTime: [
-          { required: true, message: '修改日期不能为空', trigger: 'blur' }
+          {required: true, message: '修改日期不能为空', trigger: 'blur'}
         ]
       }
     }
@@ -160,7 +160,7 @@ export default {
             ),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.name = data.category.name
               this.dataForm.content = data.category.content
@@ -205,12 +205,12 @@ export default {
               createTime: this.dataForm.createTime,
               updateTime: this.dataForm.updateTime
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
                 type: 'success',
-                duration: 1500,
+                duration: 1000,
                 onClose: () => {
                   this.visible = false
                   this.$emit('refreshDataList')
