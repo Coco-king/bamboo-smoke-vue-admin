@@ -39,7 +39,7 @@
       <el-table-column prop="level" label="地区层级"></el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
       <el-table-column prop="updateTime" label="最后修改时间"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="265">
+      <el-table-column fixed="right" label="操作" width="268">
         <template slot-scope="scope">
           <el-button
             v-if="scope.row.level <= 2 && isAuth('admin:region:save')"
