@@ -38,6 +38,21 @@ import regionCascader from '@/components/region-cascader'
 export default {
   components: {regionCascader},
   data() {
+    let checkValue = (rule, value, callback) => {
+      if (!value) {
+        return callback(new Error('地区对应值不能为空'))
+      }
+      if (!Number.isInteger(Number.parseInt(value))) {
+        callback(new Error('请输入一个数字'))
+      } else {
+        if (value < 0) {
+          callback(new Error('必须是0或者以上的数字'))
+        } else {
+          callback()
+        }
+      }
+    }
+
     return {
       visible: false,
       dataForm: {
@@ -54,7 +69,8 @@ export default {
             trigger: 'blur'
           }
         ],
-        name: [{required: true, message: '地区名称不能为空', trigger: 'blur'}]
+        name: [{required: true, message: '地区名称不能为空', trigger: 'blur'}],
+        value: [{required: true, validator: checkValue, trigger: 'blur'}]
       }
     }
   },
@@ -62,7 +78,7 @@ export default {
     handleChange(value) {
       this.dataForm.parentId = value[value.length - 1]
     },
-    init(id) {
+    init(id, regionId) {
       this.dataForm.id = id || 0
 
       this.visible = true
@@ -70,6 +86,10 @@ export default {
         this.$refs['dataForm'].resetFields()
         const $cascader = this.$refs['cascader']
         $cascader.resetFields()
+
+        if (regionId) {
+          $cascader.initSelect(regionId, false)
+        }
 
         if (this.dataForm.id) {
           $cascader.initSelect(this.dataForm.id)

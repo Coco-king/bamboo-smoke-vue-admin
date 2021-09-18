@@ -38,8 +38,18 @@
       <el-table-column prop="value" label="地区编号" sortable></el-table-column>
       <el-table-column prop="level" label="地区层级"></el-table-column>
       <el-table-column prop="createTime" label="创建时间"></el-table-column>
-      <el-table-column fixed="right" label="操作" width="150">
+      <el-table-column prop="updateTime" label="最后修改时间"></el-table-column>
+      <el-table-column fixed="right" label="操作" width="265">
         <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.level <= 2 && isAuth('admin:region:save')"
+            @click="addOrUpdateHandle(null, scope.row.id)"
+            type="success"
+            plain
+            size="mini"
+          >
+            添加下级区域
+          </el-button>
           <el-button
             v-if="scope.row.level !== 0"
             @click="addOrUpdateHandle(scope.row.id)"
@@ -131,10 +141,10 @@ export default {
       })
     },
     // 新增 / 修改
-    addOrUpdateHandle(id) {
+    addOrUpdateHandle(id, regionId) {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(id)
+        this.$refs.addOrUpdate.init(id, regionId)
       })
     },
     initRegionHandle() {
@@ -148,7 +158,7 @@ export default {
             type: 'success',
             duration: 1000,
             onClose: () => {
-              this.getDataList()
+              this.$router.replace({path: '/refresh'})
             }
           })
         } else {

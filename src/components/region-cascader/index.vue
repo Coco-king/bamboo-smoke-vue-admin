@@ -45,16 +45,20 @@ export default {
         }
       })
     },
-    initSelect(regionId) {
+    initSelect(regionId, excludeSelf = true) {
       this.$http({
         url: this.$http.adornUrl(
-          `/admin/region/info/${regionId}`
+          '/admin/region/path'
         ),
         method: 'get',
-        params: this.$http.adornParams()
+        params: this.$http.adornParams({
+          id: regionId,
+          excludeSelf: excludeSelf
+        })
       }).then(({data}) => {
         if (data && data.code === 0) {
           this.cascadeData = data.cascadeData
+          this.handleChange(this.cascadeData)
         }
       })
     },
