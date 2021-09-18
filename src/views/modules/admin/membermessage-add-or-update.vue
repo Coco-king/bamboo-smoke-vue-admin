@@ -11,9 +11,9 @@
       @keyup.enter.native="dataFormSubmit()"
       label-width="80px"
     >
-      <el-form-item label="发送消息的用户ID" prop="frobsMemberId">
+      <el-form-item label="发送消息的用户ID" prop="fromMemberId">
         <el-input
-          v-model="dataForm.frobsMemberId"
+          v-model="dataForm.fromMemberId"
           placeholder="发送消息的用户ID"
         ></el-input>
       </el-form-item>
@@ -80,7 +80,7 @@ export default {
       visible: false,
       dataForm: {
         id: 0,
-        frobsMemberId: '',
+        fromMemberId: '',
         toMemberId: '',
         articleId: '',
         commentId: '',
@@ -91,7 +91,7 @@ export default {
         updateTime: ''
       },
       dataRule: {
-        frobsMemberId: [
+        fromMemberId: [
           {
             required: true,
             message: '发送消息的用户ID不能为空',
@@ -161,7 +161,7 @@ export default {
             params: this.$http.adornParams()
           }).then(({data}) => {
             if (data && data.code === 0) {
-              this.dataForm.frobsMemberId = data.memberMessage.frobsMemberId
+              this.dataForm.fromMemberId = data.memberMessage.fromMemberId
               this.dataForm.toMemberId = data.memberMessage.toMemberId
               this.dataForm.articleId = data.memberMessage.articleId
               this.dataForm.commentId = data.memberMessage.commentId
@@ -186,7 +186,7 @@ export default {
             method: `${!this.dataForm.id ? 'post' : 'put'}`,
             data: this.$http.adornData({
               id: this.dataForm.id || undefined,
-              frobsMemberId: this.dataForm.frobsMemberId,
+              fromMemberId: this.dataForm.fromMemberId,
               toMemberId: this.dataForm.toMemberId,
               articleId: this.dataForm.articleId,
               commentId: this.dataForm.commentId,

@@ -51,7 +51,7 @@
         label="主键ID"
       ></el-table-column>
       <el-table-column
-        prop="frobsMemberId"
+        prop="fromMemberId"
         header-align="center"
         align="center"
         label="发送消息的用户ID"
@@ -183,7 +183,7 @@ export default {
           limit: this.pageSize,
           key: this.dataForm.key
         })
-      }).then(({ data }) => {
+      }).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.page.list
           this.totalPage = data.page.totalCount
@@ -232,7 +232,7 @@ export default {
           url: this.$http.adornUrl('/admin/membermessage/delete'),
           method: 'delete',
           data: this.$http.adornData(ids, false)
-        }).then(({ data }) => {
+        }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
