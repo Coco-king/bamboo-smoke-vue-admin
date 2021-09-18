@@ -12,15 +12,7 @@
       label-width="120px"
     >
       <el-form-item label="上级区域" prop="parentId">
-        <el-cascader
-          style="width:100%"
-          v-model="cascadeData"
-          :options="regionList"
-          :props="props"
-          @change="handleChange"
-          change-on-select
-          clearable
-        ></el-cascader>
+        <region-cascader ref="cascader" @change="handleChange" :maxLevel="2"/>
       </el-form-item>
       <el-form-item label="地区名称" prop="name">
         <el-input v-model="dataForm.name" placeholder="地区名称"></el-input>
@@ -41,18 +33,13 @@
 </template>
 
 <script>
+import regionCascader from '@/components/region-cascader'
+
 export default {
+  components: {regionCascader},
   data() {
     return {
       visible: false,
-      regionList: [],
-      cascadeData: [],
-      props: {
-        checkStrictly: true,
-        label: 'name',
-        children: 'children',
-        expandTrigger: 'hover'
-      },
       dataForm: {
         id: 0,
         parentId: '',
@@ -78,25 +65,14 @@ export default {
     init(id) {
       this.dataForm.id = id || 0
 
-      this.$http({
-        url: this.$http.adornUrl('/admin/region/list/tree'),
-        method: 'get',
-        params: this.$http.adornParams({maxLevel: 2})
-      })
-      .then(({data}) => {
-        if (data && data.code === 0) {
-          this.regionList = data.list
-        }
-      })
-      .then(() => {
-        this.visible = true
-        this.$nextTick(() => {
-          this.$refs['dataForm'].resetFields()
-          this.cascadeData = []
-        })
-      })
-      .then(() => {
+      this.visible = true
+      this.$nextTick(() => {
+        this.$refs['dataForm'].resetFields()
+        const $cascader = this.$refs['cascader']
+        $cascader.resetFields()
+
         if (this.dataForm.id) {
+          $cascader.initSelect(this.dataForm.id)
           this.$http({
             url: this.$http.adornUrl(
               `/admin/region/info/${this.dataForm.id}`
@@ -105,7 +81,6 @@ export default {
             params: this.$http.adornParams()
           }).then(({data}) => {
             if (data && data.code === 0) {
-              this.cascadeData = data.cascadeData
               this.dataForm.id = data.region.id
               this.dataForm.parentId = data.region.parentId
               this.dataForm.name = data.region.name

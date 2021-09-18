@@ -97,7 +97,6 @@ export default {
         this.fetchData(newParentId).then(({data}) => {
           if (data && data.code === 0) {
             this.$set(this.$refs.table.store.states.lazyTreeNodeMap, newParentId, data.list)
-            console.log(newParentId)
           }
         })
       }
