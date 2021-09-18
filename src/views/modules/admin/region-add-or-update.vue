@@ -56,7 +56,8 @@ export default {
       dataForm: {
         id: 0,
         parentId: '',
-        name: ''
+        name: '',
+        value: ''
       },
       dataRule: {
         parentId: [
@@ -139,7 +140,7 @@ export default {
                 duration: 1000,
                 onClose: () => {
                   this.visible = false
-                  this.$emit('refreshDataList', [data.newParentId, data.oldParentId])
+                  this.$emit('refreshDataList', [data.newParentId, data.oldItem])
                 }
               })
             } else {

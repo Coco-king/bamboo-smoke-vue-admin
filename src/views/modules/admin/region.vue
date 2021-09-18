@@ -24,6 +24,7 @@
       </el-form-item>
     </el-form>
     <el-table
+      ref="table"
       :data="dataList"
       style="width: 100%;margin-bottom: 20px;"
       row-key="id"
@@ -74,8 +75,7 @@ export default {
       },
       dataList: [],
       dataListLoading: false,
-      addOrUpdateVisible: false,
-      maps: new Map()
+      addOrUpdateVisible: false
     }
   },
   components: {
@@ -87,22 +87,23 @@ export default {
   methods: {
     refreshData(data) {
       const newParentId = data[0]
-      const oldParentId = data[1]
+      const oldItem = data[1]
       // 懒加载刷新旧的父级
-      if (oldParentId && this.maps.get(oldParentId)) {
-        const {tree, treeNode, resolve} = this.maps.get(oldParentId)
-        this.load(tree, treeNode, resolve)
+      if (oldItem) {
+        this.deleteLazyTableItem(oldItem)
       }
       // 懒加载刷新新的父级
-      if (newParentId && this.maps.get(newParentId)) {
-        const {tree, treeNode, resolve} = this.maps.get(newParentId)
-        this.load(tree, treeNode, resolve)
+      if (newParentId) {
+        this.fetchData(newParentId).then(({data}) => {
+          if (data && data.code === 0) {
+            this.$set(this.$refs.table.store.states.lazyTreeNodeMap, newParentId, data.list)
+            console.log(newParentId)
+          }
+        })
       }
     },
     load(tree, treeNode, resolve) {
-      const id = tree.id
-      this.maps.set(id, {tree, treeNode, resolve})
-      this.fetchData(id).then(({data}) => {
+      this.fetchData(tree.id).then(({data}) => {
         if (data && data.code === 0) {
           resolve(data.list)
         } else {
@@ -113,7 +114,7 @@ export default {
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true
-      this.fetchData(1).then(({data}) => {
+      this.fetchData(0).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.list
         } else {
@@ -178,7 +179,7 @@ export default {
               type: 'success',
               duration: 1000,
               onClose: () => {
-                row.id === '1' ? this.getDataList() : this.refreshData([row.parentId])
+                this.deleteLazyTableItem(row)
               }
             })
           } else {
@@ -186,6 +187,29 @@ export default {
           }
         })
       })
+    },
+    deleteLazyTableItem(item) {
+      const store = this.$refs.table.store
+      // id等于1时表示为根节点
+      if (item.id !== '1') {
+        let parentRow = store.states.data.find(child => child.id === item.parentId)
+        if (!parentRow) {
+          const keys = Object.keys(store.states.lazyTreeNodeMap)
+          for (let i = 0; i < keys.length; i++) {
+            parentRow = store.states.lazyTreeNodeMap[keys[i]].find(child => child.id === item.parentId)
+            if (parentRow) {
+              break
+            }
+          }
+        }
+        const parent = store.states.lazyTreeNodeMap[item.parentId]
+        const index = parent.findIndex(child => child.id === item.id)
+        parent.splice(index, 1)
+      } else {
+        const parent = store.states.data
+        const index = parent.findIndex(child => child.id === item.id)
+        parent.splice(index, 1)
+      }
     }
   }
 }
