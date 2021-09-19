@@ -3,23 +3,20 @@
     <el-upload
       action="https://bamboo-smoke-img.oss-cn-shanghai.aliyuncs.com"
       :data="dataObj"
+      :show-file-list="false"
       list-type="picture"
-      :multiple="false"
-      :show-file-list="showFileList"
-      :file-list="fileList"
       :before-upload="beforeUpload"
       :on-remove="handleRemove"
       :on-success="handleUploadSuccess"
-      :on-preview="handlePreview"
     >
-      <el-button size="small" type="primary">点击上传</el-button>
-      <div slot="tip" class="el-upload__tip">
-        只能上传jpg/png文件，且不超过10MB
-      </div>
+      <img
+        alt="头像"
+        v-if="dialogVisible"
+        :src="file.url"
+        class="avatar"
+      />
+      <i v-else class="el-icon-plus avatar-uploader-icon"></i>
     </el-upload>
-    <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="fileList[0].url" alt=""/>
-    </el-dialog>
   </div>
 </template>
 <script>
@@ -42,23 +39,6 @@ export default {
       } else {
         return null
       }
-    },
-    fileList() {
-      return [
-        {
-          name: this.imageName,
-          url: this.imageUrl
-        }
-      ]
-    },
-    showFileList: {
-      get: function () {
-        return (
-          this.value !== null && this.value !== '' && this.value !== undefined
-        )
-      },
-      set: function (newValue) {
-      }
     }
   },
   data() {
@@ -72,6 +52,10 @@ export default {
         host: ''
         // callback:'',
       },
+      file: {
+        name: this.imageName,
+        url: this.imageUrl
+      },
       dialogVisible: false
     }
   },
@@ -79,7 +63,7 @@ export default {
     emitInput(val) {
       this.$emit('input', val)
     },
-    handleRemove(file, fileList) {
+    handleRemove(file) {
       this.$http({
         url: this.$http.adornUrl('/api/oss/remove'),
         method: 'delete',
@@ -90,48 +74,58 @@ export default {
         }
       })
     },
-    handlePreview(file) {
-      this.dialogVisible = true
-    },
     beforeUpload(file) {
-      let _self = this
-      return new Promise((resolve, reject) => {
-        policy(this.type)
-        .then(response => {
-          _self.dataObj.policy = response.data.policy
-          _self.dataObj.signature = response.data.signature
-          _self.dataObj.ossaccessKeyId = response.data.accessId
-          _self.dataObj.key = response.data.dir + getUUID() + '_${filename}'
-          _self.dataObj.dir = response.data.dir
-          _self.dataObj.host = response.data.host
-          resolve(true)
+      const isImg = file.type === 'image/jpeg' || file.type === 'image/png'
+      const isLt2M = file.size / 1024 / 1024 < 2
+
+      if (!isImg) {
+        this.$message.error('上传头像图片只能是 JPG/PNG 格式！')
+      }
+
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB！')
+      }
+
+      if (isImg && isLt2M) {
+        let _self = this
+        return new Promise((resolve, reject) => {
+          policy(this.type)
+          .then(response => {
+            _self.dataObj.policy = response.data.policy
+            _self.dataObj.signature = response.data.signature
+            _self.dataObj.ossaccessKeyId = response.data.accessId
+            _self.dataObj.key = response.data.dir + getUUID() + '_${filename}'
+            _self.dataObj.dir = response.data.dir
+            _self.dataObj.host = response.data.host
+            resolve(true)
+          })
+          .catch(err => {
+            reject(err)
+          })
         })
-        .catch(err => {
-          reject(err)
-        })
-      })
+      } else {
+        return false
+      }
     },
     handleUploadSuccess(res, file) {
-      // console.log('上传成功...')
-      this.showFileList = true
-      let remove = this.fileList.pop()
+      this.dialogVisible = true
       // console.log(remove)
-      if (remove) {
+      if (this.file.url) {
         this.$http({
           url: this.$http.adornUrl('/api/oss/remove'),
           method: 'delete',
-          data: this.$http.adornData({urls: [remove.url]}, false)
+          data: this.$http.adornData({urls: [this.file.url]}, false)
         }).then(res => {
         })
       }
-      this.fileList.push({
+      this.file = {
         name: file.name,
         url:
           this.dataObj.host +
           '/' +
           this.dataObj.key.replace('${filename}', file.name)
-      })
-      this.emitInput(this.fileList[0].url)
+      }
+      this.emitInput(this.file.url)
     }
   }
 }

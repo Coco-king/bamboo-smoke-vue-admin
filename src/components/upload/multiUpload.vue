@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-upload
-      action="https://gulimall-codecrab.oss-cn-beijing.aliyuncs.com"
+      action="https://bamboo-smoke-img.oss-cn-shanghai.aliyuncs.com"
       :data="dataObj"
       list-type="picture-card"
       :file-list="fileList"
@@ -15,20 +15,21 @@
       <i class="el-icon-plus"></i>
     </el-upload>
     <el-dialog :visible.sync="dialogVisible">
-      <img width="100%" :src="dialogImageUrl" alt />
+      <img width="100%" :src="dialogImageUrl" alt/>
     </el-dialog>
   </div>
 </template>
 <script>
 import { policy } from './policy'
 import { getUUID } from '@/utils'
+
 export default {
   name: 'multiUpload',
   props: {
-    //图片属性数组
+    // 图片属性数组
     value: Array,
     type: String,
-    //最大上传图片数量
+    // 最大上传图片数量
     maxCount: {
       type: Number,
       default: 30
@@ -53,13 +54,14 @@ export default {
     fileList() {
       let fileList = []
       for (let i = 0; i < this.value.length; i++) {
-        fileList.push({ url: this.value[i] })
+        fileList.push({url: this.value[i]})
       }
 
       return fileList
     }
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {
     emitInput(fileList) {
       let value = []
@@ -70,9 +72,9 @@ export default {
     },
     handleRemove(file, fileList) {
       this.$http({
-        url: this.$http.adornUrl('/thirdparty/oss/remove'),
+        url: this.$http.adornUrl('/api/oss/remove'),
         method: 'delete',
-        data: this.$http.adornData({ urls: [file.url] }, false)
+        data: this.$http.adornData({urls: [file.url]}, false)
       }).then(res => {
         if (res.data && res.data.code === 0) {
           this.emitInput(fileList)
@@ -87,20 +89,18 @@ export default {
       let _self = this
       return new Promise((resolve, reject) => {
         policy(this.type)
-          .then(response => {
-            console.log('这是什么${filename}')
-            _self.dataObj.policy = response.data.policy
-            _self.dataObj.signature = response.data.signature
-            _self.dataObj.ossaccessKeyId = response.data.accessId
-            _self.dataObj.key = response.data.dir + getUUID() + '_${filename}'
-            _self.dataObj.dir = response.data.dir
-            _self.dataObj.host = response.data.host
-            resolve(true)
-          })
-          .catch(err => {
-            console.log('出错了...', err)
-            reject(false)
-          })
+        .then(response => {
+          _self.dataObj.policy = response.data.policy
+          _self.dataObj.signature = response.data.signature
+          _self.dataObj.ossaccessKeyId = response.data.accessId
+          _self.dataObj.key = response.data.dir + getUUID() + '_${filename}'
+          _self.dataObj.dir = response.data.dir
+          _self.dataObj.host = response.data.host
+          resolve(true)
+        })
+        .catch(err => {
+          reject(err)
+        })
       })
     },
     handleUploadSuccess(res, file) {

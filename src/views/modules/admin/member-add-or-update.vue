@@ -15,21 +15,7 @@
         <el-col :span="9">&nbsp;</el-col>
         <el-col :span="4">
           <el-form-item prop="avatar">
-            <el-upload
-              class="avatar-uploader"
-              :action="uploadUrl"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
-            >
-              <img
-                alt="头像"
-                v-if="avatarUrl"
-                :src="avatarUrl"
-                class="avatar"
-              />
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
+            <mini-upload class="avatar-uploader" v-model="dataForm.avatar" type="avatar"/>
           </el-form-item>
         </el-col>
         <el-col :span="11">&nbsp;</el-col>
@@ -145,7 +131,7 @@
       <el-row>
         <el-col :span="23">
           <el-form-item label="所在城市" prop="city">
-            <el-input v-model="dataForm.city" placeholder="所在城市"></el-input>
+            <region-cascader ref="cascader" @change="handleChange" :maxLevel="3"/>
           </el-form-item>
         </el-col>
       </el-row>
@@ -171,8 +157,11 @@
 
 <script>
 import { isEmail, isMobile } from '@/utils/validate'
+import regionCascader from '@/components/region-cascader'
+import miniUpload from '@/components/upload/miniUpload'
 
 export default {
+  components: {regionCascader, miniUpload},
   data() {
     let checkEmail = (rule, value, callback) => {
       if (!value) {
@@ -219,7 +208,6 @@ export default {
     }
 
     return {
-      uploadUrl: `${window.SITE_CONFIG.baseUrl}/api/upload/avatar`,
       visible: false,
       avatarUrl: '',
       dataForm: {
@@ -242,20 +230,20 @@ export default {
       },
       dataRule: {
         memberName: [
-          { required: true, message: '昵称不能为空', trigger: 'blur' }
+          {required: true, message: '昵称不能为空', trigger: 'blur'}
         ],
         password: [
-          { required: true, message: '密码不能为空', trigger: 'blur' }
+          {required: true, message: '密码不能为空', trigger: 'blur'}
         ],
-        rePass: [{ required: true, validator: checkRePass, trigger: 'blur' }],
-        email: [{ required: true, validator: checkEmail, trigger: 'blur' }],
-        mobile: [{ required: true, validator: checkPhone, trigger: 'blur' }],
-        point: [{ required: true, validator: checkPoint, trigger: 'blur' }],
-        gender: [{ required: true, message: '性别不能为空', trigger: 'blur' }],
+        rePass: [{required: true, validator: checkRePass, trigger: 'blur'}],
+        email: [{required: true, validator: checkEmail, trigger: 'blur'}],
+        mobile: [{required: true, validator: checkPhone, trigger: 'blur'}],
+        point: [{required: true, validator: checkPoint, trigger: 'blur'}],
+        gender: [{required: true, message: '性别不能为空', trigger: 'blur'}],
         vipLevel: [
-          { required: true, message: 'vip等级不能为空', trigger: 'blur' }
+          {required: true, message: 'vip等级不能为空', trigger: 'blur'}
         ],
-        status: [{ required: true, message: '状态不能为空', trigger: 'blur' }]
+        status: [{required: true, message: '状态不能为空', trigger: 'blur'}]
       },
       options: [
         {
@@ -278,36 +266,21 @@ export default {
     }
   },
   methods: {
-    handleAvatarSuccess(res, file) {
-      console.log(res)
-      console.log(file)
-      // this.avatarUrl = URL.createObjectURL(file.raw)
-    },
-    beforeAvatarUpload(file) {
-      console.log(window.SITE_CONFIG.baseUrl)
-      const isImg = file.type === 'image/jpeg' || file.type === 'image/png'
-      const isLt2M = file.size / 1024 / 1024 < 2
-
-      if (!isImg) {
-        this.$message.error('上传头像图片只能是 JPG/PNG 格式！')
-      }
-
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB！')
-      }
-      return isImg && isLt2M
+    handleChange(value) {
+      this.dataForm.city = value[value.length - 1]
     },
     init(id) {
       this.dataForm.id = id || 0
       this.visible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].resetFields()
+        this.$refs['cascader'].resetFields()
         if (this.dataForm.id) {
           this.$http({
             url: this.$http.adornUrl(`/admin/member/info/${this.dataForm.id}`),
             method: 'get',
             params: this.$http.adornParams()
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.memberName = data.member.memberName
               this.dataForm.authName = data.member.authName
@@ -354,7 +327,7 @@ export default {
               avatar: this.dataForm.avatar,
               status: this.dataForm.status
             })
-          }).then(({ data }) => {
+          }).then(({data}) => {
             if (data && data.code === 0) {
               this.$message({
                 message: '操作成功',
