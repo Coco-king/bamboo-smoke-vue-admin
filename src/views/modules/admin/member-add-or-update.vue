@@ -15,7 +15,12 @@
         <el-col :span="9">&nbsp;</el-col>
         <el-col :span="4">
           <el-form-item prop="avatar">
-            <mini-upload class="avatar-uploader" v-model="dataForm.avatar" type="avatar"/>
+            <mini-upload
+              ref="miniUpload"
+              class="avatar-uploader"
+              type="avatar"
+              @change="handleAvatarChange"
+            />
           </el-form-item>
         </el-col>
         <el-col :span="11">&nbsp;</el-col>
@@ -39,25 +44,22 @@
       <el-row>
         <el-col :span="11">
           <el-form-item label="密码" prop="password">
-            <el-input v-model="dataForm.password" placeholder="密码"></el-input>
+            <el-input v-model="dataForm.password" type="password" show-password placeholder="密码"></el-input>
           </el-form-item>
         </el-col>
         <el-col :span="1">&nbsp;</el-col>
         <el-col :span="11">
           <el-form-item label="确认密码" prop="rePass">
-            <el-input
-              v-model="dataForm.rePass"
-              placeholder="确认密码"
-            ></el-input>
+            <el-input type="password" v-model="dataForm.rePass" show-password placeholder="确认密码"></el-input>
           </el-form-item>
         </el-col>
       </el-row>
       <el-row>
         <el-col :span="11">
-          <el-form-item label="手机电话" prop="mobile">
+          <el-form-item label="手机号码" prop="mobile">
             <el-input
               v-model="dataForm.mobile"
-              placeholder="手机电话"
+              placeholder="手机号码"
             ></el-input>
           </el-form-item>
         </el-col>
@@ -82,6 +84,7 @@
           <el-form-item label="生日" prop="birthday">
             <el-date-picker
               type="date"
+              value-format="yyyy-MM-dd"
               placeholder="生日"
               v-model="dataForm.birthday"
               style="width: 100%;"
@@ -169,6 +172,8 @@ export default {
       }
       if (!isEmail(value)) {
         callback(new Error('邮箱格式不正确'))
+      } else {
+        callback()
       }
     }
 
@@ -209,7 +214,6 @@ export default {
 
     return {
       visible: false,
-      avatarUrl: '',
       dataForm: {
         id: 0,
         memberName: '',
@@ -219,16 +223,17 @@ export default {
         email: '',
         mobile: '',
         city: '',
-        point: '0',
         sign: '',
-        gender: '1',
         wechat: '',
-        vipLevel: '0',
         birthday: '',
         avatar: '',
+        vipLevel: '0',
+        gender: '1',
+        point: '0',
         status: '0'
       },
       dataRule: {
+        avatar: [{required: true, message: '头像不能为空', trigger: 'blur'}],
         memberName: [
           {required: true, message: '昵称不能为空', trigger: 'blur'}
         ],
@@ -269,12 +274,21 @@ export default {
     handleChange(value) {
       this.dataForm.city = value[value.length - 1]
     },
+    handleAvatarChange(value) {
+      this.dataForm.avatar = value
+    },
     init(id) {
       this.dataForm.id = id || 0
       this.visible = true
       this.$nextTick(() => {
         this.$refs['dataForm'].resetFields()
-        this.$refs['cascader'].resetFields()
+
+        const $miniUpload = this.$refs['miniUpload']
+        $miniUpload.resetFields()
+
+        const $cascader = this.$refs['cascader']
+        $cascader.resetFields()
+
         if (this.dataForm.id) {
           this.$http({
             url: this.$http.adornUrl(`/admin/member/info/${this.dataForm.id}`),
@@ -282,8 +296,17 @@ export default {
             params: this.$http.adornParams()
           }).then(({data}) => {
             if (data && data.code === 0) {
+              if (data.member.city) {
+                $cascader.initSelect(data.member.city, false)
+              }
+
+              if (data.member.avatar) {
+                $miniUpload.init(data.member.avatar)
+              }
               this.dataForm.memberName = data.member.memberName
               this.dataForm.authName = data.member.authName
+              this.dataForm.password = data.member.password
+              this.dataForm.rePass = data.member.password
               this.dataForm.email = data.member.email
               this.dataForm.mobile = data.member.mobile
               this.dataForm.city = data.member.city

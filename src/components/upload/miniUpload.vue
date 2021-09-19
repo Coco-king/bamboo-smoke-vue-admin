@@ -26,20 +26,7 @@ import { getUUID } from '@/utils'
 export default {
   name: 'singleUpload',
   props: {
-    value: String,
     type: String
-  },
-  computed: {
-    imageUrl() {
-      return this.value
-    },
-    imageName() {
-      if (this.value != null && this.value !== '') {
-        return this.value.substr(this.value.lastIndexOf('/') + 1)
-      } else {
-        return null
-      }
-    }
   },
   data() {
     return {
@@ -53,15 +40,24 @@ export default {
         // callback:'',
       },
       file: {
-        name: this.imageName,
-        url: this.imageUrl
+        name: '',
+        url: ''
       },
       dialogVisible: false
     }
   },
   methods: {
-    emitInput(val) {
-      this.$emit('input', val)
+    resetFields() {
+      this.file = {}
+      this.dialogVisible = false
+    },
+    init(url) {
+      this.dialogVisible = true
+      this.file.name = url ? url.substr(url.lastIndexOf('/') + 1) : ''
+      this.file.url = url || ''
+    },
+    emitChange(val) {
+      this.$emit('change', val)
     },
     handleRemove(file) {
       this.$http({
@@ -70,7 +66,7 @@ export default {
         data: this.$http.adornData({urls: [file.url]}, false)
       }).then(res => {
         if (res && res.code === 0) {
-          this.emitInput('')
+          this.emitChange('')
         }
       })
     },
@@ -109,7 +105,6 @@ export default {
     },
     handleUploadSuccess(res, file) {
       this.dialogVisible = true
-      // console.log(remove)
       if (this.file.url) {
         this.$http({
           url: this.$http.adornUrl('/api/oss/remove'),
@@ -125,7 +120,7 @@ export default {
           '/' +
           this.dataObj.key.replace('${filename}', file.name)
       }
-      this.emitInput(this.file.url)
+      this.emitChange(this.file.url)
     }
   }
 }

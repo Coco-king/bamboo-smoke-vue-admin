@@ -7,6 +7,7 @@
     @change="handleChange"
     change-on-select
     clearable
+    filterable
   ></el-cascader>
 </template>
 

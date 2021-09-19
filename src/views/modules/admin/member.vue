@@ -32,6 +32,7 @@
       </el-form-item>
     </el-form>
     <el-table
+      ref="filterTable"
       :data="dataList"
       border
       v-loading="dataListLoading"
@@ -45,34 +46,31 @@
         width="50"
       ></el-table-column>
       <el-table-column
-        prop="id"
         header-align="center"
         align="center"
         label="ID"
-      ></el-table-column>
+        prop="id"
+        width="80"
+      >
+      </el-table-column>
+      <el-table-column
+        header-align="center"
+        align="center"
+        label="头像"
+        width="60"
+      >
+        <template slot-scope="scope">
+          <el-popover placement="left-start" title="" trigger="hover" >
+            <img :src="scope.row.avatar" alt="" style="width: 150px;height: 150px">
+            <img alt="" slot="reference" :src="scope.row.avatar" style="width: 30px;height: 30px">
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="memberName"
         header-align="center"
         align="center"
         label="用户名"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="password"
-        header-align="center"
-        align="center"
-        label="密码"
-      ></el-table-column>
-      <el-table-column
-        prop="salt"
-        header-align="center"
-        align="center"
-        label="盐"
-      ></el-table-column> -->
-      <el-table-column
-        prop="authName"
-        header-align="center"
-        align="center"
-        label="社区认证"
       ></el-table-column>
       <el-table-column
         prop="email"
@@ -85,110 +83,79 @@
         header-align="center"
         align="center"
         label="手机电话"
+        width="130"
       ></el-table-column>
-      <!-- <el-table-column
-        prop="city"
+      <el-table-column
+        prop="authName"
         header-align="center"
         align="center"
-        label="所在城市"
-      ></el-table-column> -->
+        label="社区认证"
+        width="110"
+      ></el-table-column>
       <el-table-column
         prop="point"
         header-align="center"
         align="center"
         label="积分"
+        width="90"
       ></el-table-column>
-      <!-- <el-table-column
-        prop="sign"
+      <el-table-column
+        prop="vipLevel"
         header-align="center"
         align="center"
-        label="个性签名"
-      ></el-table-column> -->
+        label="VIP等级"
+        width="80"
+      ></el-table-column>
       <el-table-column
         prop="gender"
         header-align="center"
         align="center"
         label="性别"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="wechat"
-        header-align="center"
-        align="center"
-        label="微信号"
-      ></el-table-column> -->
-      <el-table-column
-        prop="vipLevel"
-        header-align="center"
-        align="center"
-        label="vip等级"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="birthday"
-        header-align="center"
-        align="center"
-        label="生日"
-      ></el-table-column> -->
-      <el-table-column
-        prop="avatar"
-        header-align="center"
-        align="center"
-        label="头像"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="postCount"
-        header-align="center"
-        align="center"
-        label="内容数量"
-      ></el-table-column>
-      <el-table-column
-        prop="commentCount"
-        header-align="center"
-        align="center"
-        label="评论数量"
-      ></el-table-column> -->
-      <!--（0：未激活邮箱，1：正常，-1：已封禁）-->
+        width="60"
+      >
+        <template slot-scope="scope">
+          <el-tag :type="scope.row.gender === '1' ? 'primary' : 'danger'">
+            {{ scope.row.gender === '1' ? '男' : '女' }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="status"
         header-align="center"
         align="center"
         label="状态"
-      ></el-table-column>
-      <!-- （0：未激活邮箱，1：正常，-1：已封禁）-->
-      <!-- <el-table-column
-        prop="code"
-        header-align="center"
-        align="center"
-        label="激活邮件地址"
-      ></el-table-column>
-      <el-table-column
-        prop="lastLoginTime"
-        header-align="center"
-        align="center"
-        label="最后的登陆时间"
-      ></el-table-column>
-      <el-table-column
-        prop="deleted"
-        header-align="center"
-        align="center"
-        label="逻辑删除（0：未删除，1：已注销账户）"
-      ></el-table-column> -->
+        width="110"
+      >
+        <template slot-scope="scope">
+          <el-tag :type="statusType(scope.row.status)">
+            {{ statusName(scope.row.status) }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
         label="创建日期"
-      ></el-table-column>
-      <!-- <el-table-column
-        prop="updateTime"
-        header-align="center"
-        align="center"
-        label="修改时间"
-      ></el-table-column> -->
+        width="110"
+      >
+        <template slot-scope="scope">
+          <el-popover
+            placement="left-start"
+            title="创建日期"
+            width="180"
+            trigger="hover"
+            :content="scope.row.createTime"
+          >
+            <el-button slot="reference" type="text">{{ scope.row.createTime.substring(0, 11) }}</el-button>
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
         align="center"
-        width="150"
+        width="100"
         label="操作"
       >
         <template slot-scope="scope">
@@ -242,7 +209,29 @@ export default {
       totalPage: 0,
       dataListLoading: false,
       dataListSelections: [],
-      addOrUpdateVisible: false
+      addOrUpdateVisible: false,
+      options: [
+        {
+          value: '0',
+          label: '未激活邮箱',
+          type: 'warning'
+        },
+        {
+          value: '1',
+          label: '正常',
+          type: 'success'
+        },
+        {
+          value: '-1',
+          label: '已封禁',
+          type: 'danger'
+        },
+        {
+          value: '-10',
+          label: '已注销账户',
+          type: 'info'
+        }
+      ]
     }
   },
   components: {
@@ -250,6 +239,23 @@ export default {
   },
   activated() {
     this.getDataList()
+  },
+  computed: {
+    statusType() {
+      return function (status) {
+        return this.searchStatus(status).type
+      }
+    },
+    statusName() {
+      return function (status) {
+        return this.searchStatus(status).label
+      }
+    },
+    searchStatus() {
+      return function (status) {
+        return this.options.filter(item => item.value === status)[0]
+      }
+    }
   },
   methods: {
     // 获取数据列表
@@ -263,7 +269,7 @@ export default {
           limit: this.pageSize,
           key: this.dataForm.key
         })
-      }).then(({ data }) => {
+      }).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.page.list
           this.totalPage = data.page.totalCount
@@ -312,7 +318,7 @@ export default {
           url: this.$http.adornUrl('/admin/member/delete'),
           method: 'delete',
           data: this.$http.adornData(ids, false)
-        }).then(({ data }) => {
+        }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
