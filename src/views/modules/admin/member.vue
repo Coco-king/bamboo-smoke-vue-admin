@@ -7,10 +7,66 @@
     >
       <el-form-item>
         <el-input
-          v-model="dataForm.key"
-          placeholder="参数名"
+          style="width: 150px;"
+          v-model="dataForm.id"
+          prefix-icon="el-icon-search"
+          placeholder="输入ID"
           clearable
         ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input
+          v-model="dataForm.key"
+          prefix-icon="el-icon-search"
+          placeholder="输入邮箱/会员名/手机号"
+          clearable
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-select
+          style="width: 120px;"
+          v-model="dataForm.gender"
+          clearable
+          placeholder="请选择性别"
+        >
+          <el-option
+            v-for="item in [{label:'男',value:'1'},{label:'女',value:'0'}]"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select
+          style="width: 150px;"
+          v-model="dataForm.status"
+          clearable
+          placeholder="请选择会员状态"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-date-picker
+          v-model="dataForm.createTime"
+          type="daterange"
+          align="left"
+          unlink-panels
+          value-format="yyyy-MM-dd"
+          range-separator="至"
+          start-placeholder="开始日期"
+          end-placeholder="结束日期"
+          :picker-options="pickerOptions"
+        >
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -46,6 +102,7 @@
         width="50"
       ></el-table-column>
       <el-table-column
+        sortable
         header-align="center"
         align="center"
         label="ID"
@@ -60,7 +117,7 @@
         width="60"
       >
         <template slot-scope="scope">
-          <el-popover placement="left-start" title="" trigger="hover" >
+          <el-popover placement="left-start" title="" trigger="hover">
             <img :src="scope.row.avatar" alt="" style="width: 150px;height: 150px">
             <img alt="" slot="reference" :src="scope.row.avatar" style="width: 30px;height: 30px">
           </el-popover>
@@ -93,6 +150,7 @@
         width="110"
       ></el-table-column>
       <el-table-column
+        sortable
         prop="point"
         header-align="center"
         align="center"
@@ -100,10 +158,11 @@
         width="90"
       ></el-table-column>
       <el-table-column
+        sortable
         prop="vipLevel"
         header-align="center"
         align="center"
-        label="VIP等级"
+        label="VIP"
         width="80"
       ></el-table-column>
       <el-table-column
@@ -136,7 +195,7 @@
         prop="createTime"
         header-align="center"
         align="center"
-        label="创建日期"
+        label="注册日期"
         width="110"
       >
         <template slot-scope="scope">
@@ -201,7 +260,11 @@ export default {
   data() {
     return {
       dataForm: {
-        key: ''
+        id: '',
+        key: '',
+        gender: '',
+        status: '',
+        createTime: ''
       },
       dataList: [],
       pageIndex: 1,
@@ -231,7 +294,34 @@ export default {
           label: '已注销账户',
           type: 'info'
         }
-      ]
+      ],
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      }
     }
   },
   components: {
@@ -267,7 +357,12 @@ export default {
         params: this.$http.adornParams({
           page: this.pageIndex,
           limit: this.pageSize,
-          key: this.dataForm.key
+          id: this.dataForm.id,
+          key: this.dataForm.key,
+          gender: this.dataForm.gender,
+          status: this.dataForm.status,
+          createBeginTime: this.dataForm.createTime[0],
+          createEndTime: this.dataForm.createTime[1]
         })
       }).then(({data}) => {
         if (data && data.code === 0) {
