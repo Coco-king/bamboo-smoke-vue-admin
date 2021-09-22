@@ -120,7 +120,7 @@
         <el-col :span="1">&nbsp;</el-col>
         <el-col :span="11">
           <el-form-item label="状态" prop="status">
-            <el-select v-model="dataForm.status" clearable placeholder="状态">
+            <el-select v-model="dataForm.status" clearable placeholder="请选择状态" style="width: 100%;">
               <el-option
                 v-for="item in options"
                 :key="item.value"

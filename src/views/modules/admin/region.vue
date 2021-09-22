@@ -135,7 +135,7 @@ export default {
     // 拉取数据
     fetchData(rootId) {
       return this.$http({
-        url: this.$http.adornUrl('/admin/region/list/tree'),
+        url: this.$http.adornUrl('/api/region/list/tree'),
         method: 'get',
         params: this.$http.adornParams({parentId: rootId, isLazy: true})
       })

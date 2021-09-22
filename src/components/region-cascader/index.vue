@@ -36,7 +36,7 @@ export default {
     init() {
       this.resetFields()
       this.$http({
-        url: this.$http.adornUrl('/admin/region/list/tree'),
+        url: this.$http.adornUrl('/api/region/list/tree'),
         method: 'get',
         params: this.$http.adornParams({maxLevel: this.maxLevel})
       })
@@ -49,7 +49,7 @@ export default {
     initSelect(regionId, excludeSelf = true) {
       this.$http({
         url: this.$http.adornUrl(
-          '/admin/region/path'
+          '/api/region/path'
         ),
         method: 'get',
         params: this.$http.adornParams({
@@ -72,7 +72,3 @@ export default {
   }
 }
 </script>
-
-<style scoped>
-
-</style>
