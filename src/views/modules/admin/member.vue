@@ -201,7 +201,7 @@
         <template slot-scope="scope">
           <el-popover
             placement="left-start"
-            title="创建日期"
+            title="详细注册日期"
             width="180"
             trigger="hover"
             :content="scope.row.createTime"
