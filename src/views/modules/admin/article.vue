@@ -38,6 +38,33 @@
       @selection-change="selectionChangeHandle"
       style="width: 100%;"
     >
+      <el-table-column type="expand">
+        <template slot-scope="props">
+          <el-form label-position="left" inline class="demo-table-expand">
+            <el-form-item label="创建人">
+              <span>{{ props.row.memberName }}</span>
+            </el-form-item>
+            <el-form-item label="社区认证">
+              <span>{{ props.row.memberAuthName }}</span>
+            </el-form-item>
+            <el-form-item label="点赞量">
+              <span>{{ props.row.voteUp }}</span>
+            </el-form-item>
+            <el-form-item label="点踩量">
+              <span>{{ props.row.voteDown }}</span>
+            </el-form-item>
+            <el-form-item label="评论数量">
+              <span>{{ props.row.commentCount }}</span>
+            </el-form-item>
+            <el-form-item label="置顶等级">
+              <span>{{ props.row.level }}</span>
+            </el-form-item>
+            <el-form-item label="是否精华">
+              <span>{{ props.row.recommend ? '是' : '否' }}</span>
+            </el-form-item>
+          </el-form>
+        </template>
+      </el-table-column>
       <el-table-column
         type="selection"
         header-align="center"
@@ -48,7 +75,8 @@
         prop="id"
         header-align="center"
         align="center"
-        label="主键ID"
+        label="ID"
+        width="120"
       ></el-table-column>
       <el-table-column
         prop="title"
@@ -57,106 +85,61 @@
         label="标题"
       ></el-table-column>
       <el-table-column
-        prop="coverImage"
         header-align="center"
         align="center"
-        label="标题"
-      ></el-table-column>
+        label="封面"
+        width="90"
+      >
+        <template slot-scope="scope">
+          <el-popover placement="left-start" title="" trigger="hover">
+            <el-image
+              style="width: 200px; height: 200px"
+              :src="scope.row.coverImage"
+              fit="contain"
+            ></el-image>
+            <img alt="" slot="reference" :src="scope.row.coverImage" style="width: 40px;height: 40px">
+          </el-popover>
+        </template>
+      </el-table-column>
       <el-table-column
-        prop="content"
+        prop="categoryName"
         header-align="center"
         align="center"
-        label="内容"
-      ></el-table-column>
-      <el-table-column
-        prop="editMode"
-        header-align="center"
-        align="center"
-        label="编辑模式：html可视化，markdown .."
-      ></el-table-column>
-      <el-table-column
-        prop="categoryId"
-        header-align="center"
-        align="center"
-        label="文章所属分类ID"
-      ></el-table-column>
-      <el-table-column
-        prop="memberId"
-        header-align="center"
-        align="center"
-        label="用户ID"
-      ></el-table-column>
-      <el-table-column
-        prop="memberAuthName"
-        header-align="center"
-        align="center"
-        label="用户认证标识"
-      ></el-table-column>
-      <el-table-column
-        prop="voteUp"
-        header-align="center"
-        align="center"
-        label="点赞人数"
-      ></el-table-column>
-      <el-table-column
-        prop="voteDown"
-        header-align="center"
-        align="center"
-        label="点踩人数"
+        label="分类"
+        width="90"
       ></el-table-column>
       <el-table-column
         prop="viewCount"
         header-align="center"
         align="center"
         label="访问量"
-      ></el-table-column>
-      <el-table-column
-        prop="commentCount"
-        header-align="center"
-        align="center"
-        label="评论数量"
-      ></el-table-column>
-      <el-table-column
-        prop="recommend"
-        header-align="center"
-        align="center"
-        label="是否为精华"
-      ></el-table-column>
-      <el-table-column
-        prop="level"
-        header-align="center"
-        align="center"
-        label="置顶等级"
+        width="110"
       ></el-table-column>
       <el-table-column
         prop="status"
         header-align="center"
         align="center"
-        label="状态（0：审核未通过 1：审核通过）"
-      ></el-table-column>
-      <el-table-column
-        prop="deleted"
-        header-align="center"
-        align="center"
-        label="逻辑删除（0：未删除，1：已删除）"
-      ></el-table-column>
+        label="状态"
+        width="120"
+      >
+        <template slot-scope="scope">
+          <el-tag :type="statusType(scope.row.status)">
+            {{ statusName(scope.row.status) }}
+          </el-tag>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
         label="创建日期"
-      ></el-table-column>
-      <el-table-column
-        prop="updateTime"
-        header-align="center"
-        align="center"
-        label="最后更新日期"
+        width="160"
       ></el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
         align="center"
-        width="150"
+        width="100"
         label="操作"
       >
         <template slot-scope="scope">
@@ -210,11 +193,45 @@ export default {
       totalPage: 0,
       dataListLoading: false,
       dataListSelections: [],
-      addOrUpdateVisible: false
+      addOrUpdateVisible: false,
+      options: [
+        {
+          value: '0',
+          label: '审核中',
+          type: 'warning'
+        },
+        {
+          value: '1',
+          label: '审核通过',
+          type: 'success'
+        },
+        {
+          value: '-1',
+          label: '审核不通过',
+          type: 'danger'
+        }
+      ]
     }
   },
   components: {
     AddOrUpdate
+  },
+  computed: {
+    statusType() {
+      return function (status) {
+        return this.searchStatus(status).type
+      }
+    },
+    statusName() {
+      return function (status) {
+        return this.searchStatus(status).label
+      }
+    },
+    searchStatus() {
+      return function (status) {
+        return this.options.filter(item => item.value === status)[0]
+      }
+    }
   },
   activated() {
     this.getDataList()
@@ -231,7 +248,7 @@ export default {
           limit: this.pageSize,
           key: this.dataForm.key
         })
-      }).then(({ data }) => {
+      }).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.page.list
           this.totalPage = data.page.totalCount
@@ -280,7 +297,7 @@ export default {
           url: this.$http.adornUrl('/admin/article/delete'),
           method: 'delete',
           data: this.$http.adornData(ids, false)
-        }).then(({ data }) => {
+        }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
@@ -299,3 +316,19 @@ export default {
   }
 }
 </script>
+
+<style>
+.demo-table-expand {
+  font-size: 0;
+}
+
+.demo-table-expand label {
+  width: 90px;
+  color: #99a9bf;
+}
+
+.demo-table-expand .el-form-item {
+  margin: 0 2%;
+  width: 46%;
+}
+</style>

@@ -9,9 +9,9 @@
       :rules="dataRule"
       ref="dataForm"
       @keyup.enter.native="dataFormSubmit()"
-      label-width="80px"
+      label-width="120px"
     >
-      <el-form-item label="标题" prop="name">
+      <el-form-item label="分类名" prop="name">
         <el-input v-model="dataForm.name" placeholder="标题"></el-input>
       </el-form-item>
       <el-form-item label="内容描述" prop="content">
@@ -21,9 +21,34 @@
         <el-input v-model="dataForm.summary" placeholder="分类概要"></el-input>
       </el-form-item>
       <el-form-item label="图标" prop="icon">
-        <el-input v-model="dataForm.icon" placeholder="图标"></el-input>
+        <el-popover
+          ref="iconListPopover"
+          placement="bottom-start"
+          trigger="click"
+          popper-class="mod-menu__icon-popover"
+          v-model="iconVisible"
+        >
+          <div class="mod-menu__icon-inner">
+            <div class="mod-menu__icon-list">
+              <el-button
+                v-for="(item, index) in iconList"
+                :key="index"
+                @click="iconActiveHandle(item)"
+                :class="{ 'is-active': item === dataForm.icon }"
+              >
+                <icon-svg :name="item"></icon-svg>
+              </el-button>
+            </div>
+            <div style="text-align: right;margin-right: 3.39em;margin-top: 0.6em">
+              <el-button size="mini" type="text" @click="rollbackIcon">取消</el-button>
+              <el-button type="primary" size="mini" @click="iconVisible = false">确定</el-button>
+            </div>
+          </div>
+        </el-popover>
+        <icon-svg v-if="dataForm.icon" :name="dataForm.icon" class="icon-svg-selected"></icon-svg>
+        <el-button size="small" v-popover:iconListPopover>点击选择</el-button>
       </el-form-item>
-      <el-form-item label="该分类的内容数量" prop="articleCount">
+      <el-form-item label="分类内容数量" prop="articleCount">
         <el-input
           v-model="dataForm.articleCount"
           placeholder="该分类的内容数量"
@@ -31,12 +56,6 @@
       </el-form-item>
       <el-form-item label="排序编码" prop="order">
         <el-input v-model="dataForm.order" placeholder="排序编码"></el-input>
-      </el-form-item>
-      <el-form-item label="父级分类的ID" prop="parentId">
-        <el-input
-          v-model="dataForm.parentId"
-          placeholder="父级分类的ID"
-        ></el-input>
       </el-form-item>
       <el-form-item label="SEO关键字" prop="metaKeywords">
         <el-input
@@ -53,24 +72,6 @@
       <el-form-item label="分类状态" prop="status">
         <el-input v-model="dataForm.status" placeholder="分类状态"></el-input>
       </el-form-item>
-      <el-form-item label="逻辑删除（0：未删除，1：已删除）" prop="deleted">
-        <el-input
-          v-model="dataForm.deleted"
-          placeholder="逻辑删除（0：未删除，1：已删除）"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="创建日期" prop="createTime">
-        <el-input
-          v-model="dataForm.createTime"
-          placeholder="创建日期"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="修改日期" prop="updateTime">
-        <el-input
-          v-model="dataForm.updateTime"
-          placeholder="修改日期"
-        ></el-input>
-      </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -80,10 +81,15 @@
 </template>
 
 <script>
+import Icon from '@/icons'
+
 export default {
   data() {
     return {
       visible: false,
+      iconVisible: false,
+      iconList: [],
+      initIcon: '',
       dataForm: {
         id: 0,
         name: '',
@@ -92,23 +98,12 @@ export default {
         icon: '',
         articleCount: '',
         order: '',
-        parentId: '',
         metaKeywords: '',
         metaDescription: '',
-        status: '',
-        deleted: '',
-        createTime: '',
-        updateTime: ''
+        status: ''
       },
       dataRule: {
         name: [{required: true, message: '标题不能为空', trigger: 'blur'}],
-        content: [
-          {required: true, message: '内容描述不能为空', trigger: 'blur'}
-        ],
-        summary: [
-          {required: true, message: '分类概要不能为空', trigger: 'blur'}
-        ],
-        icon: [{required: true, message: '图标不能为空', trigger: 'blur'}],
         articleCount: [
           {
             required: true,
@@ -119,35 +114,28 @@ export default {
         order: [
           {required: true, message: '排序编码不能为空', trigger: 'blur'}
         ],
-        parentId: [
-          {required: true, message: '父级分类的ID不能为空', trigger: 'blur'}
-        ],
-        metaKeywords: [
-          {required: true, message: 'SEO关键字不能为空', trigger: 'blur'}
-        ],
-        metaDescription: [
-          {required: true, message: 'SEO描述内容不能为空', trigger: 'blur'}
-        ],
         status: [
           {required: true, message: '分类状态不能为空', trigger: 'blur'}
-        ],
-        deleted: [
-          {
-            required: true,
-            message: '逻辑删除（0：未删除，1：已删除）不能为空',
-            trigger: 'blur'
-          }
-        ],
-        createTime: [
-          {required: true, message: '创建日期不能为空', trigger: 'blur'}
-        ],
-        updateTime: [
-          {required: true, message: '修改日期不能为空', trigger: 'blur'}
         ]
       }
     }
   },
+  created() {
+    this.iconList = Icon.getNameList()
+  },
   methods: {
+    // 图标回滚到初始状态
+    rollbackIcon() {
+      this.dataForm.icon = this.initIcon
+      this.iconVisible = false
+    },
+    // 图标选中
+    iconActiveHandle(iconName) {
+      if (!this.initIcon) {
+        this.initIcon = this.dataForm.icon
+      }
+      this.dataForm.icon = iconName
+    },
     init(id) {
       this.dataForm.id = id || 0
       this.visible = true
@@ -168,13 +156,9 @@ export default {
               this.dataForm.icon = data.category.icon
               this.dataForm.articleCount = data.category.articleCount
               this.dataForm.order = data.category.order
-              this.dataForm.parentId = data.category.parentId
               this.dataForm.metaKeywords = data.category.metaKeywords
               this.dataForm.metaDescription = data.category.metaDescription
               this.dataForm.status = data.category.status
-              this.dataForm.deleted = data.category.deleted
-              this.dataForm.createTime = data.category.createTime
-              this.dataForm.updateTime = data.category.updateTime
             }
           })
         }
@@ -197,13 +181,9 @@ export default {
               icon: this.dataForm.icon,
               articleCount: this.dataForm.articleCount,
               order: this.dataForm.order,
-              parentId: this.dataForm.parentId,
               metaKeywords: this.dataForm.metaKeywords,
               metaDescription: this.dataForm.metaDescription,
-              status: this.dataForm.status,
-              deleted: this.dataForm.deleted,
-              createTime: this.dataForm.createTime,
-              updateTime: this.dataForm.updateTime
+              status: this.dataForm.status
             })
           }).then(({data}) => {
             if (data && data.code === 0) {
@@ -226,3 +206,61 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.mod-menu {
+  .menu-list__input,
+  .icon-list__input {
+    > .el-input__inner {
+      cursor: pointer;
+    }
+  }
+
+  &__icon-popover {
+    width: 458px;
+    overflow: hidden;
+  }
+
+  &__icon-inner {
+    width: 478px;
+    max-height: 258px;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  &__icon-list {
+    width: 458px;
+    padding: 0;
+    margin: -8px 0 0 -8px;
+
+    > .el-button {
+      padding: 8px;
+      margin: 8px 0 0 8px;
+
+      > span {
+        display: inline-block;
+        vertical-align: middle;
+        width: 18px;
+        height: 18px;
+        font-size: 18px;
+      }
+    }
+  }
+
+  .icon-list__tips {
+    font-size: 18px;
+    text-align: center;
+    color: #e6a23c;
+    cursor: pointer;
+  }
+}
+</style>
+
+<style scoped>
+.icon-svg-selected {
+  width: 1.6em;
+  height: 1.6em;
+  fill: currentColor;
+  overflow: hidden;
+}
+</style>

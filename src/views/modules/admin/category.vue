@@ -7,8 +7,18 @@
     >
       <el-form-item>
         <el-input
+          style="width: 150px;"
+          prefix-icon="el-icon-search"
+          v-model="dataForm.id"
+          placeholder="输入ID"
+          clearable
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input
+          prefix-icon="el-icon-search"
           v-model="dataForm.key"
-          placeholder="参数名"
+          placeholder="输入分类名/SEO关键字"
           clearable
         ></el-input>
       </el-form-item>
@@ -48,13 +58,13 @@
         prop="id"
         header-align="center"
         align="center"
-        label="主键ID"
+        label="ID"
       ></el-table-column>
       <el-table-column
         prop="name"
         header-align="center"
         align="center"
-        label="标题"
+        label="分类名"
       ></el-table-column>
       <el-table-column
         prop="content"
@@ -73,24 +83,22 @@
         header-align="center"
         align="center"
         label="图标"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <icon-svg :name="scope.row.icon"></icon-svg>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="articleCount"
         header-align="center"
         align="center"
-        label="该分类的内容数量"
+        label="分类内容数量"
       ></el-table-column>
       <el-table-column
         prop="order"
         header-align="center"
         align="center"
         label="排序编码"
-      ></el-table-column>
-      <el-table-column
-        prop="parentId"
-        header-align="center"
-        align="center"
-        label="父级分类的ID"
       ></el-table-column>
       <el-table-column
         prop="metaKeywords"
@@ -111,28 +119,17 @@
         label="分类状态"
       ></el-table-column>
       <el-table-column
-        prop="deleted"
-        header-align="center"
-        align="center"
-        label="逻辑删除（0：未删除，1：已删除）"
-      ></el-table-column>
-      <el-table-column
         prop="createTime"
         header-align="center"
         align="center"
         label="创建日期"
-      ></el-table-column>
-      <el-table-column
-        prop="updateTime"
-        header-align="center"
-        align="center"
-        label="修改日期"
+        width="160"
       ></el-table-column>
       <el-table-column
         fixed="right"
         header-align="center"
         align="center"
-        width="150"
+        width="100"
         label="操作"
       >
         <template slot-scope="scope">
@@ -178,6 +175,7 @@ export default {
   data() {
     return {
       dataForm: {
+        id: '',
         key: ''
       },
       dataList: [],
@@ -205,9 +203,10 @@ export default {
         params: this.$http.adornParams({
           page: this.pageIndex,
           limit: this.pageSize,
-          key: this.dataForm.key
+          key: this.dataForm.key,
+          id: this.dataForm.id
         })
-      }).then(({ data }) => {
+      }).then(({data}) => {
         if (data && data.code === 0) {
           this.dataList = data.page.list
           this.totalPage = data.page.totalCount
@@ -256,7 +255,7 @@ export default {
           url: this.$http.adornUrl('/admin/category/delete'),
           method: 'delete',
           data: this.$http.adornData(ids, false)
-        }).then(({ data }) => {
+        }).then(({data}) => {
           if (data && data.code === 0) {
             this.$message({
               message: '操作成功',
@@ -275,3 +274,12 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.icon-svg {
+  width: 1.6em;
+  height: 1.6em;
+  fill: currentColor;
+  overflow: hidden;
+}
+</style>
