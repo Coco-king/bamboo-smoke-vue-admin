@@ -1,7 +1,5 @@
 <template lang="html">
-  <div class="editor">
-    <div id="editor" class="text"></div>
-  </div>
+  <div id="editor" class="text"></div>
 </template>
 
 <script>
@@ -20,8 +18,7 @@ export default {
   name: 'articleHtmlEditor',
   data() {
     return {
-      content: '',
-      // uploadPath,
+      uploadPath: `${window.SITE_CONFIG.baseUrl}/api/oss/upload/${this.type}`,
       editor: null,
       info_: null
     }
@@ -44,20 +41,9 @@ export default {
     type: {
       type: String,
       default: 'default'
-    },
-    isClear: {
-      type: Boolean,
-      default: false
     }
   },
   watch: {
-    isClear(val) {
-      // 触发清除文本域内容
-      if (val) {
-        this.editor.txt.clear()
-        this.info_ = null
-      }
-    },
     value: function (value) {
       if (value !== this.editor.txt.html()) {
         this.editor.txt.html(this.value)
@@ -65,11 +51,15 @@ export default {
     }
   },
   methods: {
+    clearContent() {
+      this.editor.txt.clear()
+      this.info_ = null
+    },
     setEditor() {
       // http://192.168.2.125:8080/admin/storage/create
       this.editor.config.showFullScreen = true
       this.editor.config.uploadImgShowBase64 = true // base 64 存储图片
-      this.editor.config.uploadImgServer = `${window.SITE_CONFIG.baseUrl}/api/oss/upload/${this.type}` // 配置服务器端地址
+      this.editor.config.uploadImgServer = this.uploadPath // 配置服务器端地址
       this.editor.config.uploadImgHeaders = {} // 自定义 header
       this.editor.config.uploadFileName = 'file' // 后端接受上传文件的参数名
       this.editor.config.uploadImgMaxSize = 5 * 1024 * 1024 // 将图片大小限制为 2M
@@ -104,7 +94,7 @@ export default {
         'fullscreen' // 全屏
       ]
 
-      this.editor.config.uploadImgHooks = {
+      /* this.editor.config.uploadImgHooks = {
         fail: (xhr, editor, result) => {
           // 插入图片失败回调
         },
@@ -120,9 +110,9 @@ export default {
         customInsert: (insertImg, result, editor) => {
           // 图片上传成功，插入图片的回调
         }
-      }
+      } */
       this.editor.config.onchange = html => {
-        this.info_ = html // 绑定当前逐渐地值
+        this.info_ = html
         this.$emit('change', this.info_) // 将内容同步到父组件中
       }
       // 创建富文本编辑器

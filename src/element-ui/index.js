@@ -76,7 +76,9 @@ import {
   MessageBox,
   Message,
   Notification,
-  Image
+  Image,
+  Link,
+  Popconfirm
 } from 'element-ui'
 
 Vue.use(Pagination)
@@ -143,6 +145,8 @@ Vue.use(Aside)
 Vue.use(Main)
 Vue.use(Footer)
 Vue.use(Image)
+Vue.use(Link)
+Vue.use(Popconfirm)
 
 Vue.use(Loading.directive)
 
@@ -154,4 +158,4 @@ Vue.prototype.$prompt = MessageBox.prompt
 Vue.prototype.$notify = Notification
 Vue.prototype.$message = Message
 
-Vue.prototype.$ELEMENT = { size: 'medium' }
+Vue.prototype.$ELEMENT = {size: 'medium'}

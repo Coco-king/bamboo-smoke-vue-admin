@@ -1,6 +1,6 @@
 <template>
   <el-dialog
-    width="80%"
+    width="60%"
     :title="!dataForm.id ? '新增' : '修改'"
     :close-on-click-modal="false"
     :visible.sync="visible"
@@ -14,7 +14,6 @@
       :model="dataForm"
       :rules="dataRule"
       ref="dataForm"
-      @keyup.enter.native="dataFormSubmit()"
       label-width="80px"
     >
       <div v-show="stepActive === 1">
@@ -137,7 +136,11 @@
       <div v-show="stepActive === 3">
         <el-form-item label="内容" prop="content">
           <div v-if="dataForm.editMode === '1'">
-            <article-html-u-editor v-model="dataForm.content" type="article-upload"></article-html-u-editor>
+            <article-html-editor
+              v-model="dataForm.content"
+              ref="articleHtmlEditor"
+              type="article-upload"
+            ></article-html-editor>
           </div>
         </el-form-item>
       </div>
@@ -146,7 +149,8 @@
       <el-button @click="visible = false">取消</el-button>
       <el-button :disabled="stepActive <= 1" @click="prev">上一步</el-button>
       <el-button v-if="stepActive !== 3" @click="next" type="primary">下一步</el-button>
-      <el-button v-else @click="dataFormSubmit()" type="success">提交</el-button>
+      <el-button v-if="stepActive === 3" @click="clearEditor" type="danger">清空</el-button>
+      <el-button v-if="stepActive === 3" @click=" dataFormSubmit()" type="success">提交</el-button>
     </span>
   </el-dialog>
 </template>
@@ -155,10 +159,10 @@
 import { policy } from '@/components/upload/policy'
 import { getUUID } from '@/utils'
 import categorySelect from '@/components/category-select'
-import articleHtmlUEditor from '@/components/article-html-ueditor'
+import articleHtmlEditor from '@/components/article-html-editor'
 
 export default {
-  components: {categorySelect, articleHtmlUEditor},
+  components: {categorySelect, articleHtmlEditor},
   data() {
     return {
       stepActive: 1,
@@ -242,6 +246,9 @@ export default {
     }
   },
   methods: {
+    clearEditor() {
+      this.$refs.articleHtmlEditor.clearContent()
+    },
     next() {
       this.$refs['dataForm'].validate(valid => {
         if (valid) {

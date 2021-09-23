@@ -7,10 +7,39 @@
     >
       <el-form-item>
         <el-input
-          v-model="dataForm.key"
-          placeholder="参数名"
+          style="width: 150px;"
+          v-model="dataForm.id"
+          prefix-icon="el-icon-search"
+          placeholder="输入ID"
           clearable
         ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-input
+          v-model="dataForm.key"
+          prefix-icon="el-icon-search"
+          placeholder="输入标题/创建人"
+          clearable
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <category-select v-model="dataForm.categoryId"></category-select>
+      </el-form-item>
+      <el-form-item>
+        <el-select
+          style="width: 150px;"
+          v-model="dataForm.status"
+          clearable
+          placeholder="请选择文章状态"
+        >
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
       </el-form-item>
       <el-form-item>
         <el-button @click="getDataList()">查询</el-button>
@@ -29,6 +58,24 @@
         >
           批量删除
         </el-button>
+        <el-popconfirm
+          style="margin-left: 0.71em"
+          title="是否将选择数据通过审核，已审核的不会被改变"
+          confirm-button-text="是"
+          cancel-button-text="否"
+          cancel-button-type="default"
+          @confirm="examine(null, 1)"
+          @cancel="examine(null, -1)"
+          icon="el-icon-info"
+        >
+          <el-button
+            type="success"
+            slot="reference"
+            :disabled="dataListSelections.length <= 0"
+          >
+            批量审核
+          </el-button>
+        </el-popconfirm>
       </el-form-item>
     </el-form>
     <el-table
@@ -41,9 +88,6 @@
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" inline class="demo-table-expand">
-            <el-form-item label="创建人">
-              <span>{{ props.row.memberName }}</span>
-            </el-form-item>
             <el-form-item label="社区认证">
               <span>{{ props.row.memberAuthName }}</span>
             </el-form-item>
@@ -83,7 +127,11 @@
         header-align="center"
         align="center"
         label="标题"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <el-link :underline="false" @click="viewDetail(scope.row.id)">{{ scope.row.title }}</el-link>
+        </template>
+      </el-table-column>
       <el-table-column
         header-align="center"
         align="center"
@@ -93,14 +141,26 @@
         <template slot-scope="scope">
           <el-popover placement="left-start" title="" trigger="hover">
             <el-image
-              style="width: 200px; height: 200px"
-              :src="scope.row.coverImage"
+              style="width: 480px; height: 270px"
+              :src="scope.row.coverImage || coverDefaultSrc"
               fit="contain"
             ></el-image>
-            <img alt="" slot="reference" :src="scope.row.coverImage" style="width: 40px;height: 40px">
+            <el-image
+              fit="contain"
+              :src="scope.row.coverImage || coverDefaultSrc"
+              style="width: 48px;height: 27px"
+              slot="reference"
+            ></el-image>
           </el-popover>
         </template>
       </el-table-column>
+      <el-table-column
+        prop="memberName"
+        header-align="center"
+        align="center"
+        label="创建人"
+        width="120"
+      ></el-table-column>
       <el-table-column
         prop="categoryName"
         header-align="center"
@@ -139,10 +199,23 @@
         fixed="right"
         header-align="center"
         align="center"
-        width="100"
+        width="130"
         label="操作"
       >
         <template slot-scope="scope">
+          <el-popconfirm
+            v-if="scope.row.status === '0'"
+            style="margin-right: 0.71em"
+            title="是否通过审核"
+            confirm-button-text="是"
+            cancel-button-text="否"
+            cancel-button-type="default"
+            @confirm="examine(scope.row.id, 1)"
+            @cancel="examine(scope.row.id, -1)"
+            icon="el-icon-info"
+          >
+            <el-button slot="reference" size="small" type="text">审核</el-button>
+          </el-popconfirm>
           <el-button
             type="text"
             size="small"
@@ -175,17 +248,25 @@
       ref="addOrUpdate"
       @refreshDataList="getDataList"
     ></add-or-update>
+    <!-- 审核页 -->
+    <article-view v-if="viewVisible" ref="articleView"></article-view>
   </div>
 </template>
 
 <script>
 import AddOrUpdate from './article-add-or-update'
+import ArticleView from './article-view'
+import CategorySelect from '@/components/category-select'
 
 export default {
   data() {
     return {
+      coverDefaultSrc: 'https://cube.elemecdn.com/6/94/4d3ea53c084bad6931a56d5158a48jpeg.jpeg',
       dataForm: {
-        key: ''
+        key: '',
+        categoryId: '',
+        id: '',
+        status: ''
       },
       dataList: [],
       pageIndex: 1,
@@ -194,6 +275,7 @@ export default {
       dataListLoading: false,
       dataListSelections: [],
       addOrUpdateVisible: false,
+      viewVisible: false,
       options: [
         {
           value: '0',
@@ -214,7 +296,7 @@ export default {
     }
   },
   components: {
-    AddOrUpdate
+    AddOrUpdate, ArticleView, CategorySelect
   },
   computed: {
     statusType() {
@@ -237,6 +319,13 @@ export default {
     this.getDataList()
   },
   methods: {
+    // 预览文章
+    viewDetail(id) {
+      this.viewVisible = true
+      this.$nextTick(() => {
+        this.$refs.articleView.init(id)
+      })
+    },
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true
@@ -246,7 +335,10 @@ export default {
         params: this.$http.adornParams({
           page: this.pageIndex,
           limit: this.pageSize,
-          key: this.dataForm.key
+          key: this.dataForm.key,
+          categoryId: this.dataForm.categoryId,
+          id: this.dataForm.id,
+          status: this.dataForm.status
         })
       }).then(({data}) => {
         if (data && data.code === 0) {
@@ -279,6 +371,31 @@ export default {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
         this.$refs.addOrUpdate.init(id)
+      })
+    },
+    // 审核
+    examine(id, status, isSon = false) {
+      let ids = id ? [id] : this.dataListSelections.map(item => item.id)
+      this.$http({
+        url: this.$http.adornUrl('/admin/article/examine'),
+        method: 'put',
+        data: this.$http.adornData({ids, status}, false)
+      }).then(({data}) => {
+        if (data && data.code === 0) {
+          this.$message({
+            message: '操作成功',
+            type: 'success',
+            duration: 1000,
+            onClose: () => {
+              if (isSon) {
+                this.$refs.articleView.closeArticleView()
+              }
+              this.getDataList()
+            }
+          })
+        } else {
+          this.$message.error(data.msg)
+        }
       })
     },
     // 删除
