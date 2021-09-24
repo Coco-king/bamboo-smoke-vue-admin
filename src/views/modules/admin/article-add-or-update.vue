@@ -43,7 +43,7 @@
         <el-row>
           <el-col :span="11">
             <el-form-item label="所属用户" prop="memberId">
-              <el-input v-model="dataForm.memberId" placeholder="用户ID"></el-input>
+              <member-select ref="memberSelect" v-model="dataForm.memberId"></member-select>
             </el-form-item>
           </el-col>
           <el-col :span="1">&nbsp;</el-col>
@@ -160,9 +160,10 @@ import { policy } from '@/components/upload/policy'
 import { getUUID } from '@/utils'
 import categorySelect from '@/components/category-select'
 import articleHtmlEditor from '@/components/article-html-editor'
+import memberSelect from '@/components/member-select'
 
 export default {
-  components: {categorySelect, articleHtmlEditor},
+  components: {categorySelect, articleHtmlEditor, memberSelect},
   data() {
     return {
       stepActive: 1,
@@ -339,6 +340,7 @@ export default {
               this.dataForm.recommend = data.article.recommend
               this.dataForm.level = data.article.level
               this.dataForm.status = data.article.status
+              this.$refs['memberSelect'].init(this.dataForm.memberId)
             }
           })
         }
@@ -388,6 +390,13 @@ export default {
           })
         }
       })
+    }
+  },
+  watch: {
+    visible(newVal) {
+      if (newVal === false) {
+        this.$refs['memberSelect'].closeSelect()
+      }
     }
   }
 }
