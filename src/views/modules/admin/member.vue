@@ -77,14 +77,60 @@
         >
           新增
         </el-button>
-        <el-button
-          v-if="isAuth('admin:member:delete')"
-          type="danger"
-          @click="deleteHandle()"
-          :disabled="dataListSelections.length <= 0"
+        <el-popover
+          placement="top"
+          trigger="hover"
+          style="margin-left: 0.71em"
         >
-          批量删除
-        </el-button>
+          <el-button
+            plain
+            type="success"
+            @click="status(null, 1, true)"
+            :disabled="dataListSelections.length <= 0"
+          >
+            批量激活
+          </el-button>
+          <el-button
+            plain
+            type="primary"
+            @click="status(null, 1)"
+            :disabled="dataListSelections.length <= 0"
+          >
+            批量解封
+          </el-button>
+          <el-button
+            type="success"
+            @click="status(null, 1, false, true)"
+            :disabled="dataListSelections.length <= 0"
+          >
+            批量恢复
+          </el-button>
+          <el-button
+            plain
+            type="warning"
+            @click="status(null, -1)"
+            :disabled="dataListSelections.length <= 0"
+          >
+            批量封禁
+          </el-button>
+          <el-button
+            plain
+            type="danger"
+            @click="status(null, -10)"
+            :disabled="dataListSelections.length <= 0"
+          >
+            批量销户
+          </el-button>
+          <el-button
+            v-if="isAuth('admin:member:delete')"
+            type="danger"
+            @click="deleteHandle()"
+            :disabled="dataListSelections.length <= 0"
+          >
+            批量删除
+          </el-button>
+          <el-button slot="reference" type="info" :disabled="dataListSelections.length <= 0">批量操作</el-button>
+        </el-popover>
       </el-form-item>
     </el-form>
     <el-table
@@ -214,10 +260,50 @@
         fixed="right"
         header-align="center"
         align="center"
-        width="100"
+        width="170"
         label="操作"
       >
         <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.status !== '-10'"
+            type="text"
+            size="small"
+            @click="status(scope.row.id, -10)"
+          >
+            销户
+          </el-button>
+          <el-button
+            v-if="scope.row.status === '-10'"
+            type="text"
+            size="small"
+            @click="status(scope.row.id, 1, false, true)"
+          >
+            恢复
+          </el-button>
+          <el-button
+            v-if="scope.row.status === '-1'"
+            type="text"
+            size="small"
+            @click="status(scope.row.id, 1)"
+          >
+            解封
+          </el-button>
+          <el-button
+            v-if="scope.row.status === '1'"
+            type="text"
+            size="small"
+            @click="status(scope.row.id, -1)"
+          >
+            封禁
+          </el-button>
+          <el-button
+            v-if="scope.row.status === '0'"
+            type="text"
+            size="small"
+            @click="status(scope.row.id, 1, true)"
+          >
+            激活
+          </el-button>
           <el-button
             type="text"
             size="small"
@@ -348,6 +434,28 @@ export default {
     }
   },
   methods: {
+    // 修改状态
+    status(id, status, isActive = false, isRecovery = false) {
+      let ids = id ? [id] : this.dataListSelections.map(item => item.id)
+      this.$http({
+        url: this.$http.adornUrl('/admin/member/status'),
+        method: 'put',
+        data: this.$http.adornData({ids, status, isActive, isRecovery}, false)
+      }).then(({data}) => {
+        if (data && data.code === 0) {
+          this.$message({
+            message: '操作成功',
+            type: 'success',
+            duration: 1000,
+            onClose: () => {
+              this.getDataList()
+            }
+          })
+        } else {
+          this.$message.error(data.msg)
+        }
+      })
+    },
     // 获取数据列表
     getDataList() {
       this.dataListLoading = true
