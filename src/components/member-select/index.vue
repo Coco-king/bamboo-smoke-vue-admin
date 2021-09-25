@@ -42,7 +42,6 @@ export default {
       loading: false
     }
   },
-  // TODO 因为前端传数组参数会带上'[]'，所以暂时使用POST请求方式，可以在前端使用qs序列化数组后传入
   methods: {
     closeSelect() {
       this.options = []
@@ -52,8 +51,11 @@ export default {
       if (ids) {
         this.$http({
           url: this.$http.adornUrl('/admin/member/select/search'),
-          method: 'post',
-          data: this.$http.adornData({ids: Array.isArray(ids) ? ids : [ids]}, false)
+          method: 'get',
+          params: this.$http.adornParams({ids: Array.isArray(ids) ? ids : [ids]}, false),
+          paramsSerializer: params => {
+            return this.$qs.stringify(params, {indices: false})
+          }
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.options = data.list
@@ -68,8 +70,8 @@ export default {
         // 发送请求查询指定用户
         this.$http({
           url: this.$http.adornUrl('/admin/member/select/search'),
-          method: 'post',
-          data: this.$http.adornData({query}, false)
+          method: 'get',
+          params: this.$http.adornParams({query}, false)
         }).then(({data}) => {
           if (data && data.code === 0) {
             this.options = data.list
