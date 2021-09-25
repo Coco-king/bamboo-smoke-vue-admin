@@ -3,16 +3,8 @@
 </template>
 
 <script>
-(function () {
-  const hm = document.createElement('script')
-  const hm1 = document.createElement('script')
-  hm.src = 'https://cdn.jsdelivr.net/npm/wangeditor@latest/dist/wangEditor.min.js'
-  hm1.src = 'http://cdn.bootcss.com/highlight.js/8.0/highlight.min.js'
-  const s = document.getElementsByTagName('script')[0]
-  const s1 = document.getElementsByTagName('script')[0]
-  s.parentNode.insertBefore(hm, s)
-  s1.parentNode.insertBefore(hm1, s1)
-})()
+import E from 'wangeditor'
+import highlight from 'highlight.js'
 
 export default {
   name: 'articleHtmlEditor',
@@ -24,7 +16,6 @@ export default {
     }
   },
   mounted() {
-    const E = window.wangEditor
     this.editor = new E('#editor')
     this.setEditor()
     this.editor.txt.html(this.value)
@@ -67,7 +58,7 @@ export default {
       this.editor.config.uploadImgTimeout = 3 * 60 * 1000 // 设置超时时间
 
       // 配置代码高亮
-      this.editor.highlight = window.hljs
+      this.editor.highlight = highlight
 
       // 配置菜单
       this.editor.config.menus = [
