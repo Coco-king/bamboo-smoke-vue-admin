@@ -23,15 +23,18 @@
     "gulp-load-plugins": "2.0.5",
     "gulp-replace": "1.0.0",
     "gulp-shell": "0.8.0",
+    "highlight.js": "^11.2.0",
     "lodash": "4.17.5",
     "node-sass": "4.14.1",
     "npm": "^6.9.0",
+    "qs": "^6.10.1",
     "sass-loader": "6.0.6",
     "svg-sprite-loader": "3.7.3",
     "vue": "2.5.22",
     "vue-cookie": "1.1.4",
     "vue-router": "3.0.1",
-    "vuex": "3.0.1"
+    "vuex": "3.0.1",
+    "wangeditor": "^4.7.8"
   },
   "devDependencies": {
     "autoprefixer": "7.1.2",
