@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import router from '@/router'
 import store from '@/store'
-import fa from 'element-ui/src/locale/lang/fa'
 
 /**
  * 获取uuid
@@ -13,7 +12,7 @@ export function getUUID() {
 }
 
 /**
- * 判断数组及其中的元素是否全部为空
+ * 判断是否是数组及其中的元素是否全部为空
  */
 export function notEmpty(array, includeEle) {
   let res = array && Array.isArray(array) && array.length > 0
