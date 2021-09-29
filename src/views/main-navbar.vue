@@ -57,7 +57,7 @@
       </el-menu>
     </div>
     <!-- 弹窗, 修改密码 -->
-    <update-password v-if="updatePassowrdVisible" ref="updatePassowrd"></update-password>
+    <update-password v-if="updatePasswordVisible" ref="updatePassowrd"></update-password>
   </nav>
 </template>
 
@@ -68,7 +68,7 @@ import { clearLoginInfo } from '@/utils'
 export default {
   data() {
     return {
-      updatePassowrdVisible: false
+      updatePasswordVisible: false
     }
   },
   components: {
@@ -105,7 +105,7 @@ export default {
   methods: {
     // 修改密码
     updatePasswordHandle() {
-      this.updatePassowrdVisible = true
+      this.updatePasswordVisible = true
       this.$nextTick(() => {
         this.$refs.updatePassowrd.init()
       })
