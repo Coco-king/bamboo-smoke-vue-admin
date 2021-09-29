@@ -63,7 +63,7 @@ const mainRoutes = {
     },
     {
       path: '/demo-echarts',
-      component: () => import('@/components/member-select'),
+      component: _import('demo/echarts'),
       name: 'demo-echarts',
       meta: {title: 'demo-echarts', isTab: true}
     },
