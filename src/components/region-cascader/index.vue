@@ -64,6 +64,7 @@ export default {
       })
     },
     handleChange(value) {
+      this.$emit('input', value[value.length - 1])
       this.$emit('change', value)
     },
     resetFields() {

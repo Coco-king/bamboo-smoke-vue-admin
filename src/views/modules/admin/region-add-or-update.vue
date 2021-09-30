@@ -12,7 +12,7 @@
       label-width="120px"
     >
       <el-form-item label="上级区域" prop="parentId">
-        <region-cascader ref="cascader" @change="handleChange" :maxLevel="2"/>
+        <region-cascader ref="cascader" v-model="dataForm.parentId" :maxLevel="2"/>
       </el-form-item>
       <el-form-item label="地区名称" prop="name">
         <el-input v-model="dataForm.name" placeholder="地区名称"></el-input>
@@ -75,9 +75,6 @@ export default {
     }
   },
   methods: {
-    handleChange(value) {
-      this.dataForm.parentId = value[value.length - 1]
-    },
     init(id, regionId) {
       this.dataForm.id = id || 0
 
