@@ -11,67 +11,113 @@
       @keyup.enter.native="dataFormSubmit()"
       label-width="120px"
     >
-      <el-form-item label="分类名" prop="name">
-        <el-input v-model="dataForm.name" placeholder="标题"></el-input>
-      </el-form-item>
-      <el-form-item label="内容描述" prop="content">
-        <el-input v-model="dataForm.content" placeholder="内容描述"></el-input>
-      </el-form-item>
-      <el-form-item label="分类概要" prop="summary">
-        <el-input v-model="dataForm.summary" placeholder="分类概要"></el-input>
-      </el-form-item>
-      <el-form-item label="图标" prop="icon">
-        <el-popover
-          ref="iconListPopover"
-          placement="bottom-start"
-          trigger="click"
-          popper-class="mod-menu__icon-popover"
-          v-model="iconVisible"
-        >
-          <div class="mod-menu__icon-inner">
-            <div class="mod-menu__icon-list">
-              <el-button
-                v-for="(item, index) in iconList"
-                :key="index"
-                @click="iconActiveHandle(item)"
-                :class="{ 'is-active': item === dataForm.icon }"
-              >
-                <icon-svg :name="item"></icon-svg>
-              </el-button>
-            </div>
-            <div style="text-align: right;margin-right: 3.39em;margin-top: 0.6em">
-              <el-button size="mini" type="text" @click="rollbackIcon">取消</el-button>
-              <el-button type="primary" size="mini" @click="iconVisible = false">确定</el-button>
-            </div>
-          </div>
-        </el-popover>
-        <icon-svg v-if="dataForm.icon" :name="dataForm.icon" class="icon-svg-selected"></icon-svg>
-        <el-button size="small" v-popover:iconListPopover>点击选择</el-button>
-      </el-form-item>
-      <el-form-item label="分类内容数量" prop="articleCount">
-        <el-input
-          v-model="dataForm.articleCount"
-          placeholder="该分类的内容数量"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="排序编码" prop="order">
-        <el-input v-model="dataForm.order" placeholder="排序编码"></el-input>
-      </el-form-item>
-      <el-form-item label="SEO关键字" prop="metaKeywords">
-        <el-input
-          v-model="dataForm.metaKeywords"
-          placeholder="SEO关键字"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="SEO描述内容" prop="metaDescription">
-        <el-input
-          v-model="dataForm.metaDescription"
-          placeholder="SEO描述内容"
-        ></el-input>
-      </el-form-item>
-      <el-form-item label="分类状态" prop="status">
-        <el-input v-model="dataForm.status" placeholder="分类状态"></el-input>
-      </el-form-item>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="分类名" prop="name">
+            <el-input v-model="dataForm.name" placeholder="分类名"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="11">
+          <el-form-item label="分类链接" prop="href">
+            <el-input v-model="dataForm.href" placeholder="分类链接"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="上级分类" prop="parentId">
+            <category-cascader v-model="dataForm.parentId" ref="categoryCascader"></category-cascader>
+          </el-form-item>
+        </el-col>
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="11">
+          <el-form-item label="图标" prop="icon">
+            <el-popover
+              ref="iconListPopover"
+              placement="bottom-start"
+              trigger="click"
+              popper-class="mod-menu__icon-popover"
+              v-model="iconVisible"
+            >
+              <div class="mod-menu__icon-inner">
+                <div class="mod-menu__icon-list">
+                  <el-button
+                    v-for="(item, index) in iconList"
+                    :key="index"
+                    @click="iconActiveHandle(item)"
+                    :class="{ 'is-active': item === dataForm.icon }"
+                  >
+                    <icon-svg :name="item"></icon-svg>
+                  </el-button>
+                </div>
+                <div style="text-align: right;margin-right: 3.39em;margin-top: 0.6em">
+                  <el-button size="mini" type="text" @click="rollbackIcon">取消</el-button>
+                  <el-button type="primary" size="mini" @click="iconVisible = false">确定</el-button>
+                </div>
+              </div>
+            </el-popover>
+            <icon-svg v-if="dataForm.icon" :name="dataForm.icon" class="icon-svg-selected"></icon-svg>
+            <el-button size="small" v-popover:iconListPopover>点击选择</el-button>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="内容描述" prop="content">
+            <el-input v-model="dataForm.content" placeholder="内容描述"></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="11">
+          <el-form-item label="分类概要" prop="summary">
+            <el-input v-model="dataForm.summary" placeholder="分类概要"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="分类内容数量" prop="articleCount">
+            <el-input
+              v-model="dataForm.articleCount"
+              placeholder="该分类的内容数量"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="11">
+          <el-form-item label="排序编码" prop="order">
+            <el-input v-model="dataForm.order" placeholder="排序编码"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="11">
+          <el-form-item label="SEO关键字" prop="metaKeywords">
+            <el-input
+              v-model="dataForm.metaKeywords"
+              placeholder="SEO关键字，多个使用英文逗号(,)隔开"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+        <el-col :span="1">&nbsp;</el-col>
+        <el-col :span="11">
+          <el-form-item label="分类状态" prop="status">
+            <el-input v-model="dataForm.status" placeholder="分类状态"></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <el-row>
+        <el-col :span="23">
+          <el-form-item label="SEO描述内容" prop="metaDescription">
+            <el-input
+              type="textarea"
+              v-model="dataForm.metaDescription"
+              placeholder="SEO描述内容"
+            ></el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="visible = false">取消</el-button>
@@ -82,9 +128,21 @@
 
 <script>
 import Icon from '@/icons'
+import CategoryCascader from '@/components/category-cascader'
 
 export default {
+  components: {CategoryCascader},
   data() {
+    let checkHref = (rule, value, callback) => {
+      if (!value) {
+        callback(new Error('分类链接不能为空'))
+      } else if (!/[a-z|A-Z]/.test(value)) {
+        callback(new Error('分类链接必须是大/小写的A-Z'))
+      } else {
+        callback()
+      }
+    }
+
     return {
       visible: false,
       iconVisible: false,
@@ -92,18 +150,21 @@ export default {
       initIcon: '',
       dataForm: {
         id: 0,
+        parentId: 0,
         name: '',
+        href: '',
         content: '',
         summary: '',
         icon: '',
-        articleCount: '',
-        order: '',
+        articleCount: '0',
+        order: '0',
         metaKeywords: '',
         metaDescription: '',
-        status: ''
+        status: '0'
       },
       dataRule: {
         name: [{required: true, message: '标题不能为空', trigger: 'blur'}],
+        href: [{required: true, validator: checkHref, trigger: 'blur'}],
         articleCount: [
           {
             required: true,
@@ -151,6 +212,8 @@ export default {
           }).then(({data}) => {
             if (data && data.code === 0) {
               this.dataForm.name = data.category.name
+              this.dataForm.parentId = data.category.parentId
+              this.dataForm.href = data.category.href
               this.dataForm.content = data.category.content
               this.dataForm.summary = data.category.summary
               this.dataForm.icon = data.category.icon
@@ -175,6 +238,8 @@ export default {
             method: `${!this.dataForm.id ? 'post' : 'put'}`,
             data: this.$http.adornData({
               id: this.dataForm.id || undefined,
+              parentId: this.dataForm.parentId,
+              href: this.dataForm.href,
               name: this.dataForm.name,
               content: this.dataForm.content,
               summary: this.dataForm.summary,
@@ -193,6 +258,7 @@ export default {
                 duration: 1000,
                 onClose: () => {
                   this.visible = false
+                  this.$refs['categoryCascader'].init()
                   this.$emit('refreshDataList')
                 }
               })

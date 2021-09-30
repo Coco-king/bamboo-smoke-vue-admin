@@ -27,7 +27,7 @@
         <el-row>
           <el-col :span="11">
             <el-form-item label="分类" prop="categoryId">
-              <category-select v-model="dataForm.categoryId"></category-select>
+              <category-cascader v-model="dataForm.categoryId" ref="categoryCascader"></category-cascader>
             </el-form-item>
           </el-col>
           <el-col :span="1">&nbsp;</el-col>
@@ -158,12 +158,12 @@
 <script>
 import { policy } from '@/components/upload/policy'
 import { getUUID } from '@/utils'
-import categorySelect from '@/components/category-select'
+import CategoryCascader from '@/components/category-cascader'
 import articleHtmlEditor from '@/components/article-html-editor'
 import memberSelect from '@/components/member-select'
 
 export default {
-  components: {categorySelect, articleHtmlEditor, memberSelect},
+  components: {CategoryCascader, articleHtmlEditor, memberSelect},
   data() {
     return {
       stepActive: 1,
@@ -313,13 +313,20 @@ export default {
         }
       })
     },
-    init(id) {
+    init(id, categoryId) {
       this.dataForm.id = id || 0
       this.visible = true
       this.stepActive = 1
       this.dataRule.content = []
       this.$nextTick(() => {
         this.$refs['dataForm'].resetFields()
+        let $select = this.$refs['categoryCascader']
+        $select.resetFields()
+
+        if (categoryId) {
+          $select.initSelect(categoryId)
+        }
+
         if (this.dataForm.id) {
           this.$http({
             url: this.$http.adornUrl(`/admin/article/info/${this.dataForm.id}`),

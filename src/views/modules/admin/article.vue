@@ -23,7 +23,7 @@
         ></el-input>
       </el-form-item>
       <el-form-item>
-        <category-select v-model="dataForm.categoryId"></category-select>
+        <category-cascader v-model="dataForm.categoryId"></category-cascader>
       </el-form-item>
       <el-form-item>
         <el-select
@@ -219,7 +219,7 @@
           <el-button
             type="text"
             size="small"
-            @click="addOrUpdateHandle(scope.row.id)"
+            @click="addOrUpdateHandle(scope.row.id, scope.row.categoryId)"
           >
             修改
           </el-button>
@@ -256,7 +256,7 @@
 <script>
 import AddOrUpdate from './article-add-or-update'
 import ArticleView from './article-view'
-import CategorySelect from '@/components/category-select'
+import CategoryCascader from '@/components/category-cascader'
 
 export default {
   data() {
@@ -296,7 +296,7 @@ export default {
     }
   },
   components: {
-    AddOrUpdate, ArticleView, CategorySelect
+    AddOrUpdate, ArticleView, CategoryCascader
   },
   computed: {
     statusType() {
@@ -367,10 +367,10 @@ export default {
       this.dataListSelections = val
     },
     // 新增 / 修改
-    addOrUpdateHandle(id) {
+    addOrUpdateHandle(id, categoryId) {
       this.addOrUpdateVisible = true
       this.$nextTick(() => {
-        this.$refs.addOrUpdate.init(id)
+        this.$refs.addOrUpdate.init(id, categoryId)
       })
     },
     // 审核

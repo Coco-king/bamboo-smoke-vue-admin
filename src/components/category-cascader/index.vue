@@ -1,8 +1,9 @@
 <template>
   <el-cascader
+    placeholder="请选择分类"
     style="width:100%"
     v-model="cascadeData"
-    :options="regionList"
+    :options="categoryList"
     :props="props"
     @change="handleChange"
     clearable
@@ -11,15 +12,15 @@
 </template>
 
 <script>
+import { treeDataTranslate } from '@/utils'
+
 export default {
-  name: 'region-cascader',
-  props: {
-    maxLevel: Number
-  },
+  name: 'categoryCascader',
+  props: {},
   data() {
     return {
       cascadeData: [],
-      regionList: [],
+      categoryList: [],
       props: {
         value: 'id',
         checkStrictly: true,
@@ -36,25 +37,23 @@ export default {
     init() {
       this.resetFields()
       this.$http({
-        url: this.$http.adornUrl('/api/region/list/tree'),
+        url: this.$http.adornUrl('/api/category/list'),
         method: 'get',
-        params: this.$http.adornParams({maxLevel: this.maxLevel})
-      })
-      .then(({data}) => {
+        params: this.$http.adornParams()
+      }).then(({data}) => {
         if (data && data.code === 0) {
-          this.regionList = data.list
+          this.categoryList = treeDataTranslate(data.list)
         }
       })
     },
-    initSelect(regionId, excludeSelf = true) {
+    initSelect(categoryId) {
       this.$http({
         url: this.$http.adornUrl(
-          '/api/region/path'
-        ),
+            '/api/category/path'
+          ),
         method: 'get',
         params: this.$http.adornParams({
-          id: regionId,
-          excludeSelf: excludeSelf
+          id: categoryId
         })
       }).then(({data}) => {
         if (data && data.code === 0) {
@@ -73,3 +72,4 @@ export default {
   }
 }
 </script>
+
